@@ -3,9 +3,10 @@ package com.github.obase.app;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.net.URL;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -21,7 +22,7 @@ import com.github.obase.app.impl.DefaultContext;
 public class Main {
 
 	static final Logger logger = LogManager.getLogger(Main.class);
-	static final String APP_PACK_PATH = Main.class.getPackage().getName().replace('.', '/');
+	static final String DEF_APP_PACK = "com.seasun.jx3dc.app"; // 默认package目录
 
 	public static void main(String[] args) {
 
@@ -29,7 +30,8 @@ public class Main {
 		String[] prcArgs = null;
 		Class<?> prcCls = null;
 		try {
-			Set<Class<?>> prcClsSet = scanProcessClass(APP_PACK_PATH);
+
+			Set<Class<?>> prcClsSet = scanPackClass(loadAppPackPath());
 
 			if (args.length > 0 && args[0].charAt(0) != '-') {
 				prcApp = args[0];
@@ -78,6 +80,32 @@ public class Main {
 		System.exit(1);
 	}
 
+	public static Set<String> loadAppPackPath() {
+		Set<String> packs = new LinkedHashSet<String>();
+
+		String apps = System.getenv("APP_PACK_PATH");
+		if (apps != null && apps.length() > 0) {
+			String[] vs = apps.split("\\s*,\\s*");
+			for (String v : vs) {
+				packs.add(v);
+			}
+		}
+
+		apps = System.getProperty("APP_PACK_PATH");
+		if (apps != null && apps.length() > 0) {
+			String[] vs = apps.split("\\s*,\\s*");
+			for (String v : vs) {
+				packs.add(v);
+			}
+		}
+
+		if (packs.size() == 0) {
+			packs.add(DEF_APP_PACK);
+		}
+
+		return packs;
+	}
+
 	public static int process(App prcObj, String[] prcArgs) {
 
 		ArgsImpl args = new ArgsImpl();
@@ -121,20 +149,77 @@ public class Main {
 		return 0;
 	}
 
-	public static Set<Class<?>> scanProcessClass(String path) throws IOException {
+	public static void scanPackClassInJar(Set<String> ret, File jarf, String[] prefixs) throws IOException {
+		JarFile jfile = null;
+		try {
+			jfile = new JarFile(jarf);
+			for (Enumeration<JarEntry> enums = jfile.entries(); enums.hasMoreElements();) {
+				String name = enums.nextElement().getName();
+				for (String pre : prefixs) {
+					if (name.startsWith(pre) && name.endsWith(".class")) {
+						ret.add(name);
+						break;
+					}
+				}
+			}
+		} finally {
+			if (jfile != null) {
+				try {
+					jfile.close();
+				} catch (IOException e) {
+					logger.error("close jar file failed", e);
+				}
+			}
+		}
+	}
 
-		Set<String> cpathSet = new HashSet<String>();
+	public static void scanPackClassInFile(Set<String> ret, File dir, String prefix) throws IOException {
+		for (File file : dir.listFiles()) {
+			if (file.isFile() && file.getName().endsWith(".class")) {
+				ret.add(prefix + "/" + file.getName());
+			} else if (file.isDirectory()) {
+				scanPackClassInFile(ret, file, prefix);
+			}
+		}
+	}
 
-		URL url = Main.class.getResource('/' + path); // 作为根目录扫描
-		if ("jar".equals(url.getProtocol())) {
-			// jar
-			String surl = url.toString();
-			int start = surl.indexOf(":");
-			int end = surl.lastIndexOf("!/");
-			scanProcessClasshInJar(cpathSet, new File(new URL(surl.substring(start + 1, end)).getFile()));
+	public static Set<Class<?>> scanPackClass(Set<String> packs) throws IOException {
+
+		if (packs.size() == 0) {
+			return Collections.emptySet();
+		}
+
+		Set<String> cpathSet = new LinkedHashSet<String>();
+
+		String[] prefixs = new String[packs.size()];
+		int idx = 0;
+		for (String pack : packs) {
+			prefixs[idx++] = pack.replace('.', '/');
+		}
+
+		String[] clsspaths;
+		if (File.separatorChar == '\\') {
+			// Windows
+			clsspaths = System.getProperty("java.class.path", "").split("\\;");
 		} else {
-			// file
-			scanProcessClasshInFile(cpathSet, new File(url.getFile()));
+			// Linux/Unix
+			clsspaths = System.getProperty("java.class.path", "").split("\\:");
+		}
+
+		for (String clsspath : clsspaths) {
+			File file = new File(clsspath);
+			if (file.isFile()) {
+				// jar
+				scanPackClassInJar(cpathSet, file, prefixs);
+			} else {
+				// dir
+				for (String prefix : prefixs) {
+					File dir = new File(file, prefix);
+					if (dir.exists() && dir.isDirectory()) {
+						scanPackClassInFile(cpathSet, dir, prefix);
+					}
+				}
+			}
 		}
 
 		Set<Class<?>> clazzSet = new HashSet<Class<?>>(cpathSet.size());
@@ -157,30 +242,5 @@ public class Main {
 			}
 		}
 		return clazzSet;
-	}
-
-	public static void scanProcessClasshInJar(Set<String> ret, File jarf) throws IOException {
-		JarFile jf = null;
-		try {
-			jf = new JarFile(jarf);
-			for (Enumeration<JarEntry> en = jf.entries(); en.hasMoreElements();) {
-				String name = en.nextElement().getName();
-				if (name.startsWith(APP_PACK_PATH) && name.endsWith(".class")) {
-					ret.add(name);
-				}
-			}
-		} finally {
-			jf.close();
-		}
-	}
-
-	public static void scanProcessClasshInFile(Set<String> ret, File dir) throws IOException {
-		for (File file : dir.listFiles()) {
-			if (file.isFile() && file.getName().endsWith(".class")) {
-				ret.add(APP_PACK_PATH + "/" + file.getName());
-			} else if (file.isDirectory()) {
-				scanProcessClasshInFile(ret, file);
-			}
-		}
 	}
 }
