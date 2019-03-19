@@ -1,4 +1,4 @@
-package com.seasun.data.app;
+package com.github.obase.app;
 
 /**
  * 确定APP回调流程: init --> exec --> done(如果还有异常则是中断)

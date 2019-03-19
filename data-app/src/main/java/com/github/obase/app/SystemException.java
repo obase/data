@@ -1,4 +1,4 @@
-package com.seasun.data.app;
+package com.github.obase.app;
 
 public class SystemException extends RuntimeException {
 

@@ -1,6 +1,6 @@
-package com.seasun.data.app.impl;
+package com.github.obase.app.impl;
 
-import com.seasun.data.app.Context;
+import com.github.obase.app.Context;
 
 public class DefaultContext implements Context {
 

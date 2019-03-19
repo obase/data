@@ -1,4 +1,4 @@
-package com.seasun.data.app;
+package com.github.obase.app;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,8 +13,8 @@ import java.util.jar.JarFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.seasun.data.app.impl.ArgsImpl;
-import com.seasun.data.app.impl.DefaultContext;
+import com.github.obase.app.impl.ArgsImpl;
+import com.github.obase.app.impl.DefaultContext;
 
 // 特定扫描com.seasun.jx3dc.app目录下面实现App接口的所有类.
 

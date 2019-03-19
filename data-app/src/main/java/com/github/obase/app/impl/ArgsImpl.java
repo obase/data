@@ -1,4 +1,4 @@
-package com.seasun.data.app.impl;
+package com.github.obase.app.impl;
 
 import java.io.PrintWriter;
 
@@ -8,7 +8,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import com.seasun.data.app.Args;
+import com.github.obase.app.Args;
 
 public class ArgsImpl implements Args {
 

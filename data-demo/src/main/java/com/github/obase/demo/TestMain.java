@@ -1,4 +1,4 @@
-package com.seasun.data.demo;
+package com.github.obase.demo;
 
 public class TestMain {
 
