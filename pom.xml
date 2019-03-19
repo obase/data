@@ -14,7 +14,6 @@
 		<jsp.version>2.3.1</jsp.version>
 		<java.version>1.8</java.version>
 		<log4j2.version>2.11.2</log4j2.version>
-		<junit.version>4.12</junit.version>
 		<spring.version>5.1.5.RELEASE</spring.version>
 		<fileupload.version>1.4</fileupload.version>
 		<cli.version>1.4</cli.version>
@@ -28,6 +27,22 @@
 
 	<dependencyManagement>
 		<dependencies>
+
+			<!-- =============================== -->
+			<!-- data utilities -->
+			<!-- =============================== -->
+			<dependency>
+				<groupId>com.obase.data</groupId>
+				<artifactId>data-test</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.obase.data</groupId>
+				<artifactId>data-app</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+
 			<!-- =============================== -->
 			<!-- servlet/jsp -->
 			<!-- =============================== -->
@@ -56,16 +71,6 @@
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-core</artifactId>
 				<version>${log4j2.version}</version>
-			</dependency>
-
-			<!-- =============================== -->
-			<!-- junit -->
-			<!-- =============================== -->
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit.version}</version>
-				<scope>test</scope>
 			</dependency>
 
 			<!-- ================================ -->
@@ -223,6 +228,20 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<!-- global dependencies -->
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.obase.data</groupId>
+			<artifactId>data-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -278,6 +297,9 @@
 							<configuration>
 								<excludes>
 									<exclude>**/logback.xml</exclude>
+									<exclude>**/log4j.xml</exclude>
+									<exclude>**/log4j2.xml</exclude>
+									<exclude>**/log4j.properties</exclude>
 								</excludes>
 							</configuration>
 						</execution>
@@ -312,5 +334,18 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+
+		<!-- global plugins -->
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+		</plugins>
 	</build>
 </project>
