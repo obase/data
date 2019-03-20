@@ -1,14 +1,12 @@
 package com.github.base.conf;
 
-import org.yaml.snakeyaml.Yaml;
+import java.io.File;
 
 public class TestMain {
 
 	public static void main(String[] args) {
-		Yaml yaml = new Yaml();
-		Object ret = (Object) yaml.load(TestMain.class.getResourceAsStream("/test.yaml"));
-		System.out.println(ret.getClass());
-		System.out.println(ret);
+		System.out.println(Thread.currentThread().getContextClassLoader().getResource("."));
+		System.out.println(new File("./").getAbsolutePath());
 	}
 
 }
