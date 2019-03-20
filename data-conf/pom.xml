@@ -6,24 +6,23 @@
 		<artifactId>data</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>data-parent</artifactId>
-	<packaging>pom</packaging>
+	<artifactId>data-conf</artifactId>
 
-	<!-- global dependencies -->
 	<dependencies>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>com.github.obase</groupId>
 			<artifactId>data-base</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.github.obase</groupId>
-			<artifactId>data-test</artifactId>
-			<scope>test</scope>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
 		</dependency>
-	</dependencies>
+		<!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>1.24</version>
+		</dependency>
 
+	</dependencies>
 </project>

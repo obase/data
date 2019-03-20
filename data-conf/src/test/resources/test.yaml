@@ -1,0 +1,73 @@
+# server sction will read by ginweb, You should
+# copy the following content to a new file named
+# conf.yml
+server:
+  runmode: debug #release/test/debug
+  port: 8633
+
+ext:
+  redis:
+    host: 120.92.169.81:6380
+    password: sgpsvr
+    # 可写为： 10.20.77.107:6379@0
+    # 以分别设置host和db
+    dbs:
+      -
+        # key，必填
+        key: mqdb
+        # 数据库名，如果带IP和端口号，则会替换默认host，否则使用默认host
+        # 如果要自定redis的IP地址，格式是 ip:port@dbname
+        name: 0
+        # 数据库密码，如果不带密码，则会使用默认密码
+      -
+        key: msgdb
+        # 这个数据库会用当前host，用其中的0库
+        name: 0
+        # 用指定密码
+        password:
+      -
+        # 这个数据库会用默认host和默认password
+        key: accdb
+        name: 2
+      -
+        # 这个数据库会用默认host和默认password
+        key: parserdb
+        name: 11
+    ext:
+      maxIdle: 32
+      idleTimeout: 240s
+      testOnBorrow: PING
+      # redis notify-keyspace-events的配置，如不需要可空或者
+    #  notifyKeyspaceEvents: Ex
+  service:
+    # 服务器ID，格式：sysName-groupNumber-idNumber
+    serverId: jx3master-1-1
+    # 系统名
+    sysName: "jx3master"
+    # inner service ip address
+    innerSvrAddr: 172.31.0.37
+    # inner service port, same as server.port if not defined
+    #innerPort: 8080
+    # admin地址，如果不设置，则地址会跟serverAddr一致，用于有内外网地址区分admin服务的情况
+    adminPort: 8029
+    # 远程Center服务器地，这个选项仅仅在server.runmode = debug 的时候有效
+    # centerAddr: 172.31.0.63:8500
+
+  # 请求时间戳过期时间。s:second, m:minut, h:hours
+  requestExpire: 5m
+  # 客户端签名密钥 KEY, 16 bit
+  secretKeyClient: 71KdxeYc91oOpxYn
+  matchZone: 比赛专区
+  matchServer: 非请勿入
+  pvpType: 3v3
+  sysname:
+    udbagent: udbagent
+  # 缓存配置
+  cache:
+    time: 5s
+    gc: 30s
+
+  datadbagentDomain: http://172.31.0.70:8222
+  VideoServerType: s
+  VideoSeason: 04
+  EventTitle: 第四届竞技大师赛
