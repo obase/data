@@ -62,7 +62,7 @@ public class Args {
 		for (Map.Entry<String, Flag> entry : flags.entrySet()) {
 			String key = entry.getKey();
 			Flag val = entry.getValue();
-			sb.append(String.format("\u0020\u0020%-10s %-16s%-10s\n", key, val.value ? "<VALUE>" : "    ", val.desc));
+			sb.append(String.format("\u0020\u0020%-20s %-10s\n", key + (val.value ? " <VALUE>" : " "), val.desc));
 		}
 		return sb.toString();
 	}
