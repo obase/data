@@ -15,7 +15,7 @@ public class Main {
 	public static void main(String[] args) {
 
 		for (String arg : args) {
-			if ("-help".equalsIgnoreCase(arg)) {
+			if ("-help".equalsIgnoreCase(arg) || "-h".equalsIgnoreCase(arg)) {
 				printAppArgsHelp();
 				return;
 			}
