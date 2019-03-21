@@ -8,10 +8,8 @@ public class BaseTester {
 		//		System.out.println(BaseTester.class.getResource("/com/seasun/jx3dc/app"));
 		//		System.out.println(System.getProperties());
 		//		Main.main(new String[] { "-a" });
-//		System.setProperty(ConfBase.CONF_FILE, "E:\\jx3workspace\\conf.yml");
-		Server s = ConfBase.bind("server", new Server());
-		System.out.println(s.runmode);
-		System.out.println(s.port);
+		//		System.setProperty(ConfBase.CONF_FILE, "E:\\jx3workspace\\conf.yml");
+		System.out.println(ConfBase.getBoolean("server.debug", null));
 	}
 
 	static class Server {

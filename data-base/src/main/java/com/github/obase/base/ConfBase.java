@@ -146,4 +146,58 @@ public class ConfBase implements ConstBase {
 		return null;
 	}
 
+	public static Integer getInteger(String xpath, Integer def) {
+		Object val = get(xpath);
+		if (val instanceof Number) {
+			return ((Number) val).intValue();
+		} else if (val instanceof String) {
+			return StringBase.toInteger((String) val);
+		}
+		return def;
+	}
+
+	public static String getString(String xpath, String def) {
+		Object val = get(xpath);
+		if (val instanceof Number) {
+			return val.toString();
+		} else if (val instanceof String) {
+			return (String) val;
+		}
+		return def;
+	}
+
+	public static Boolean getBoolean(String xpath, Boolean def) {
+		Object val = get(xpath);
+		if (val instanceof Boolean) {
+			return (Boolean) val;
+		}
+		return def;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> List<T> getList(String xpath, List<T> def) {
+		Object val = get(xpath);
+		if (val instanceof List) {
+			return (List<T>) val;
+		}
+		return def;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static String[] getStringArray(String xpath, String[] def) {
+		Object val = get(xpath);
+		if (val instanceof String) {
+			String sval = (String) val;
+			return sval.split("\\s*,\\s*");
+		} else if (val instanceof List) {
+			List lval = (List) val;
+			int size = lval.size();
+			String[] ret = new String[size];
+			for (int i = 0; i < size; i++) {
+				ret[i] = lval.get(i).toString();
+			}
+			return ret;
+		}
+		return def;
+	}
 }
