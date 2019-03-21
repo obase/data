@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://obase.github.io/schema/mysql" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://obase.github.io/schema/mysql" elementFormDefault="qualified">
+
+	<xs:complexType name="classType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="id" type="xs:string" use="optional" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="dynaType" mixed="true">
+		<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="and" type="dynaType" />
+				<xs:element name="or" type="dynaType" />
+				<xs:element name="x" type="dynaType" />
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="s" type="xs:string" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="stmtType" mixed="true">
+		<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="where" type="dynaType" />
+				<xs:element name="and" type="dynaType" />
+				<xs:element name="or" type="dynaType" />
+				<xs:element name="x" type="dynaType" />
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:string" use="required" />
+		<xs:attribute name="nop" type="xs:boolean" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="mysqlType">
+		<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="table-class" type="classType" />
+				<xs:element name="meta-class" type="classType" />
+				<xs:element name="statement" type="stmtType" />
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="namespace" type="xs:string" use="optional" />
+	</xs:complexType>
+
+	<xs:element name="obase-mysql" type="mysqlType" />
+
+</xs:schema>

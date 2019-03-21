@@ -358,5 +358,6 @@
 	</build>
 	<modules>
 		<module>data-mysql</module>
+		<module>data-mysql-annotation</module>
 	</modules>
 </project>
