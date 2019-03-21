@@ -161,7 +161,7 @@ public class ClassBase {
 		InputStream in = null;
 		try {
 			// FIXBUG: not const ContextClassLoader
-			in = ClassBase.class.getResourceAsStream(classpath);
+			in = ContextClassLoader.getResourceAsStream(classpath);
 			if (in != null) {
 				Reader reader = new BufferedReader(new InputStreamReader(in));
 				StringBuilder sb = new StringBuilder(1024);
@@ -181,7 +181,7 @@ public class ClassBase {
 
 	public static InputStream getResourceAsStream(String classpath) {
 		// FIXBUG: not const ContextClassLoader
-		return ClassBase.class.getResourceAsStream(classpath);
+		return ContextClassLoader.getResourceAsStream(classpath);
 	}
 
 	public static String getClassPathFromClassName(String className) {
@@ -214,7 +214,7 @@ public class ClassBase {
 			return new File(cwd);
 		}
 
-		URL url = BaseClass.getResource(BasePath);
+		URL url = ContextClassLoader.getResource(BasePath);
 		String jurl = url.getFile();
 		String prot = url.getProtocol();
 		if ("jar".equalsIgnoreCase(prot)) {
