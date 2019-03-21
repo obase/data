@@ -1,8 +1,8 @@
-package com.github.base.conf;
+package com.github.obase.base;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -14,38 +14,48 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.cglib.beans.BeanMap;
 import org.yaml.snakeyaml.Yaml;
 
-import com.github.obase.base.ClassBase;
-import com.github.obase.base.StringBase;
+/**
+ * # 配置读取顺序:
+ * - BASE_CONF系统属性或环境变量,一般由-c/--conf指定,然后保存于System.properties中. 也可由环境变量指定
+ * - ClassLoader.getResource("/conf.yml.$ENV")读取类路径下面. 默认代码.gitignore会忽略所有*.yml文件
+ * - 如果有$APP存在,则读取/data/apps/$APP/conf.yml.$ENV
+ */
+public class ConfBase implements ConstBase {
 
-public final class Config {
-
-	static final Logger logger = LogManager.getLogger(Config.class);
-	public static final String YAML_CONF = "YAML_CONF";
-	public static final String YAML_FILE = "conf.yml";
+	static final Logger logger = LogManager.getLogger(ConfBase.class);
 
 	final Map<String, Object> data = new HashMap<String, Object>();
 
-	private Config() {
-
+	ConfBase() {
 		InputStream in = null;
+		String confFile = System.getProperty(CONF_FILE, System.getProperty(CONF_FILE.toLowerCase(), System.getenv(CONF_FILE)));
 		try {
-			File file = null;
-
-			// 1. 查询JVM属性及环境变量
-			String path = System.getProperty(YAML_CONF, System.getProperty(YAML_CONF.toLowerCase(), System.getenv(YAML_CONF)));
-			if (StringBase.isNotEmpty(path)) {
-				file = new File(path);
-			}
-			// 2.查找类路径
-			if (file == null || !file.exists()) {
-				file = new File(ClassBase.cwd(), YAML_FILE);
-			}
-			// 3.上下文加载
-			if (file != null && !file.exists()) {
-				in = new BufferedInputStream(new FileInputStream(file));
+			if (StringBase.isNotEmpty(confFile)) {
+				in = new FileInputStream(confFile);
 			} else {
-				in = ClassBase.getResourceAsStream("/" + YAML_FILE);
+				String confName = CONF_NAME;
+				String env = System.getProperty(ENV, System.getProperty(ENV.toLowerCase(), System.getenv(ENV)));
+				if (StringBase.isNotEmpty(env)) {
+					confName += "." + env;
+				}
+				in = ClassBase.getResourceAsStream(confName);
+				if (in == null && !CONF_NAME.equals(confName)) {
+					in = ClassBase.getResourceAsStream(CONF_NAME);
+				}
+				if (in == null) {
+					String app = System.getProperty(APP, System.getProperty(APP.toLowerCase(), System.getenv(APP)));
+					if (StringBase.isNotEmpty(app)) {
+						File file = new File(APP_DIR + app + "/" + confName);
+						if (!file.exists() && !CONF_NAME.equals(confName)) {
+							file = new File(APP_DIR + app + "/" + CONF_NAME);
+						}
+						if (file.exists()) {
+							in = new FileInputStream(file);
+						}
+					}
+				}
 			}
+
 			if (in != null) {
 				Yaml y = new Yaml();
 				Map<String, Object> ret = y.load(in);
@@ -54,21 +64,22 @@ public final class Config {
 				}
 			}
 
-		} catch (Exception e) {
-			logger.error("initial config failed", e);
+		} catch (FileNotFoundException e) {
+			logger.error("file not found: " + confFile);
 		} finally {
 			if (in != null) {
 				try {
 					in.close();
 				} catch (IOException e) {
-
+					logger.error("close inputstream failed", e);
 				}
 			}
 		}
+
 	}
 
 	// 延迟初始化
-	static final Config Singleton = new Config();
+	static final ConfBase Singleton = new ConfBase();
 
 	public static Map<String, Object> get() {
 		return Singleton.data;
