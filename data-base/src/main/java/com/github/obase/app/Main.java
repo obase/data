@@ -55,7 +55,6 @@ public class Main {
 				Args args = new Args();
 				app.declare(args);
 				out.append(args.help(cls)).append("\n");
-				out.append("\n");
 			}
 		} catch (Exception e) {
 			logger.error("print app args help failed", e);
