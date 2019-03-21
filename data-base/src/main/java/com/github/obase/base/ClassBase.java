@@ -179,6 +179,10 @@ public class ClassBase {
 		}
 	}
 
+	public static URL getResource(String classpath) {
+		return ContextClassLoader.getResource(classpath);
+	}
+
 	public static InputStream getResourceAsStream(String classpath) {
 		// FIXBUG: not const ContextClassLoader
 		return ContextClassLoader.getResourceAsStream(classpath);
