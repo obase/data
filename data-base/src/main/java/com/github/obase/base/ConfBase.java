@@ -1,5 +1,6 @@
 package com.github.obase.base;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -58,7 +59,7 @@ public class ConfBase implements ConstBase {
 
 			if (in != null) {
 				Yaml y = new Yaml();
-				Map<String, Object> ret = y.load(in);
+				Map<String, Object> ret = y.load(new BufferedInputStream(in));
 				if (ret.size() > 0) {
 					data.putAll(ret);
 				}
@@ -85,6 +86,9 @@ public class ConfBase implements ConstBase {
 		return Singleton.data;
 	}
 
+	/**
+	 * 要求obj满足JavaBean规范,即属性有getter/setter方法
+	 */
 	public static <T> T bind(T obj) {
 		BeanMap bm = BeanMap.create(obj);
 		bm.putAll(Singleton.data);
@@ -127,6 +131,9 @@ public class ConfBase implements ConstBase {
 		return val;
 	}
 
+	/**
+	 * 要求obj满足JavaBean规范,即属性有getter/setter方法
+	 */
 	@SuppressWarnings("rawtypes")
 	public static <T> T bind(String xpath, T obj) {
 		Object val = get(xpath);
