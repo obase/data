@@ -16,6 +16,12 @@ public final class SystemException extends RuntimeException {
 		this.tag = tag;
 	}
 
+	public SystemException(int code, String msg) {
+		this.code = code;
+		this.msg = msg;
+		this.tag = null;
+	}
+
 	public SystemException(String msg) {
 		super(msg);
 		this.code = CODE_UNKNOWN;
@@ -35,6 +41,18 @@ public final class SystemException extends RuntimeException {
 		this.code = CODE_UNKNOWN;
 		this.msg = msg;
 		this.tag = null;
+	}
+
+	public int getCode() {
+		return code;
+	}
+
+	public String getMsg() {
+		return msg;
+	}
+
+	public String getTag() {
+		return tag;
 	}
 
 }

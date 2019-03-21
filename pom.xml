@@ -29,15 +29,6 @@
 	<dependencyManagement>
 		<dependencies>
 			<!-- =============================== -->
-			<!-- yaml utilities -->
-			<!-- =============================== -->
-			<!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
-			<dependency>
-				<groupId>org.yaml</groupId>
-				<artifactId>snakeyaml</artifactId>
-				<version>1.24</version>
-			</dependency>
-			<!-- =============================== -->
 			<!-- data utilities -->
 			<!-- =============================== -->
 			<dependency>
@@ -55,6 +46,27 @@
 				<artifactId>data-app</artifactId>
 				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
+			<dependency>
+				<groupId>com.github.obase</groupId>
+				<artifactId>data-mysql-annotation</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.obase</groupId>
+				<artifactId>data-mysql</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+
+			<!-- =============================== -->
+			<!-- yaml utilities -->
+			<!-- =============================== -->
+			<!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
+			<dependency>
+				<groupId>org.yaml</groupId>
+				<artifactId>snakeyaml</artifactId>
+				<version>1.24</version>
+			</dependency>
+
 			<!-- =============================== -->
 			<!-- servlet/jsp -->
 			<!-- =============================== -->
@@ -356,8 +368,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<modules>
-		<module>data-mysql</module>
-		<module>data-mysql-annotation</module>
-	</modules>
 </project>
