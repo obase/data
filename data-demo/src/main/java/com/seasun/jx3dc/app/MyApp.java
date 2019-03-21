@@ -14,6 +14,12 @@ public class MyApp extends App {
 	static final Logger logger = LogManager.getLogger(MyApp.class);
 
 	@Override
+	public void declare(Args args) {
+		args.defArg("test", false, "test mode");
+		args.defArg("file", true, "file path here...");
+	}
+
+	@Override
 	public int execute(Context ctx, Args args) throws Exception {
 		for (int i = 0; i < 100000; i++) {
 			logger.info("这是来自log的日志....");
