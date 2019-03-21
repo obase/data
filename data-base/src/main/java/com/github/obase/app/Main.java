@@ -15,12 +15,15 @@ public class Main {
 
 	public static void main(String[] args) {
 
+		// 帮助索引
 		for (String arg : args) {
 			if ("-help".equalsIgnoreCase(arg) || "-h".equalsIgnoreCase(arg)) {
 				printAppArgsHelp(System.out, ConstBase.APP_PACK_BASE);
 				return;
 			}
 		}
+		
+		// 解析参数, 第1个参数如果不是'-'选项,则是appName
 
 		//		String appName = null;
 		//		String[] appArgs = null;
@@ -55,7 +58,6 @@ public class Main {
 				Args args = new Args();
 				app.declare(args);
 				out.append(args.help(cls)).append("\n");
-				out.append("\n");
 			}
 		} catch (Exception e) {
 			logger.error("print app args help failed", e);
