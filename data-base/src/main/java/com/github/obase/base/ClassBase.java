@@ -24,7 +24,7 @@ public class ClassBase {
 
 	static final Logger logger = LogManager.getLogger(ClassBase.class);
 
-	public static Set<Class<?>> scanPackClass(Set<String> packs) throws IOException {
+	public static Set<Class<?>> scanPackClass(Set<String> packs, Class<?> parent) throws IOException {
 
 		if (packs.size() == 0) {
 			return Collections.emptySet();
@@ -70,8 +70,8 @@ public class ClassBase {
 				if (end == -1) {
 					end = cpath.length();
 				}
-				Class<?> clazz = Class.forName(cpath.substring(0, end).replace('/', '.'));
-				if (ClassBase.class.isAssignableFrom(clazz) && ClassBase.class != clazz) { // 必须实现APP及非abstract
+				Class<?> clazz = ClassBase.forName(cpath.substring(0, end).replace('/', '.'));
+				if (parent.isAssignableFrom(clazz) && parent != clazz) { // 必须实现APP及非abstract
 					int mfs = clazz.getModifiers();
 					if (Modifier.isPublic(mfs) && !Modifier.isAbstract(mfs)) {
 						clazzSet.add(clazz);
