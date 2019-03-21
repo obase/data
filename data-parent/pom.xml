@@ -12,10 +12,6 @@
 	<!-- global dependencies -->
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.github.obase</groupId>
 			<artifactId>data-base</artifactId>
 		</dependency>
