@@ -81,4 +81,8 @@ public class StringBase {
 		return ret;
 
 	}
+
+	public static String nvl(String v1, String v2) {
+		return v1 != null ? v1 : v2;
+	}
 }

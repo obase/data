@@ -29,13 +29,13 @@ public class ConfBase implements ConstBase {
 
 	ConfBase() {
 		InputStream in = null;
-		String confFile = System.getProperty(CONF_FILE, System.getProperty(CONF_FILE.toLowerCase(), System.getenv(CONF_FILE)));
+		String confFile = getSysCnf(CONF_FILE, null);
 		try {
 			if (StringBase.isNotEmpty(confFile)) {
 				in = new FileInputStream(confFile);
 			} else {
 				String confName = CONF_NAME;
-				String env = System.getProperty(ENV, System.getProperty(ENV.toLowerCase(), System.getenv(ENV)));
+				String env = getSysCnf(ENV, null);
 				if (StringBase.isNotEmpty(env)) {
 					confName += "." + env;
 				}
@@ -44,7 +44,7 @@ public class ConfBase implements ConstBase {
 					in = ClassBase.getResourceAsStream(CONF_NAME);
 				}
 				if (in == null) {
-					String app = System.getProperty(APP, System.getProperty(APP.toLowerCase(), System.getenv(APP)));
+					String app = getSysCnf(APP, null);
 					if (StringBase.isNotEmpty(app)) {
 						File file = new File(APP_DIR + app + "/" + confName);
 						if (!file.exists() && !CONF_NAME.equals(confName)) {
@@ -199,5 +199,13 @@ public class ConfBase implements ConstBase {
 			return ret;
 		}
 		return def;
+	}
+
+	public static String getSysCnf(String name, String def) {
+		String val = System.getProperty(name, System.getProperty(name.toLowerCase(), System.getenv(name)));
+		if (val == null || val.length() == 0) {
+			return def;
+		}
+		return val;
 	}
 }

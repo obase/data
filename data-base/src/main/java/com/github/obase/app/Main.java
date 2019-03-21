@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.github.obase.base.ClassBase;
+import com.github.obase.base.ConstBase;
 
 public class Main {
 
@@ -16,7 +17,7 @@ public class Main {
 
 		for (String arg : args) {
 			if ("-help".equalsIgnoreCase(arg) || "-h".equalsIgnoreCase(arg)) {
-				printAppArgsHelp();
+				printAppArgsHelp(System.out, ConstBase.APP_PACK_BASE);
 				return;
 			}
 		}
@@ -44,17 +45,17 @@ public class Main {
 		//		appctx.refresh();
 	}
 
-	private static void printAppArgsHelp() {
+	private static void printAppArgsHelp(Appendable out, String base) {
 		try {
 			Set<String> packs = new HashSet<String>(1);
-			packs.add("/");
+			packs.add(base);
 			Set<Class<?>> appClsSet = ClassBase.scanPackClass(packs, App.class);
 			for (Class<?> cls : appClsSet) {
 				App app = (App) cls.newInstance();
 				Args args = new Args();
 				app.declare(args);
-				System.out.println(args.help(cls));
-				System.out.println();
+				out.append(args.help(cls)).append("\n");
+				out.append("\n");
 			}
 		} catch (Exception e) {
 			logger.error("print app args help failed", e);

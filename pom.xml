@@ -334,6 +334,11 @@
 						<descriptorRefs>
 							<descriptorRef>jar-with-dependencies</descriptorRef>
 						</descriptorRefs>
+						<archive>
+							<manifest>
+								<mainClass>com.github.obase.app.Main</mainClass>
+							</manifest>
+						</archive>
 					</configuration>
 					<executions>
 						<execution>
