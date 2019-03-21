@@ -1,4 +1,4 @@
-package com.github.obase.base;
+package com.github.obase.app;
 
 public final class SystemException extends RuntimeException {
 
