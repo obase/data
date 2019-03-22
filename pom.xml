@@ -16,13 +16,14 @@
 		<spring.version>5.1.5.RELEASE</spring.version>
 		<fileupload.version>1.4</fileupload.version>
 		<jackson.version>2.9.8</jackson.version>
-		<mysql.version>5.1.47</mysql.version>
 		<mongo.version>3.10.1</mongo.version>
 		<redis.version>3.0.1</redis.version>
 		<hbase.version>2.1.3</hbase.version>
 		<kafka.version>2.1.1</kafka.version>
 		<junit.version>4.12</junit.version>
 		<rules.version>1.19.0</rules.version>
+		<mysql.version>5.1.46</mysql.version>
+		<c3p0.version>0.9.5.2</c3p0.version>
 	</properties>
 
 	<dependencyManagement>
@@ -216,6 +217,12 @@
 			<!-- ================================ -->
 			<!-- DB&MQ drivers -->
 			<!-- ================================ -->
+			<!-- https://mvnrepository.com/artifact/com.mchange/c3p0 -->
+			<dependency>
+				<groupId>com.mchange</groupId>
+				<artifactId>c3p0</artifactId>
+				<version>${c3p0.version}</version>
+			</dependency>
 			<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
 			<dependency>
 				<groupId>mysql</groupId>
