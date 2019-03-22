@@ -13,7 +13,7 @@ import org.springframework.core.io.Resource;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import com.github.obase.app.SystemException;
+import com.github.obase.SystemException;
 import com.github.obase.base.StringBase;
 import com.github.obase.mysql.MysqlErrno;
 import com.github.obase.mysql.sql.Sql;

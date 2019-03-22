@@ -14,7 +14,7 @@ import org.springframework.asm.ClassReader;
 import org.springframework.asm.Type;
 import org.springframework.core.io.Resource;
 
-import com.github.obase.app.SystemException;
+import com.github.obase.SystemException;
 import com.github.obase.base.ClassBase;
 import com.github.obase.base.StringBase;
 import com.github.obase.mysql.JdbcMeta;

@@ -14,7 +14,7 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.github.obase.app.Page;
+import com.github.obase.Page;
 import com.github.obase.mysql.JdbcMeta;
 import com.github.obase.mysql.MysqlClient;
 import com.github.obase.mysql.PstmtMeta;

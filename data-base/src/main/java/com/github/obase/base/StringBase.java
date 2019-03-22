@@ -85,4 +85,12 @@ public class StringBase {
 	public static String nvl(String v1, String v2) {
 		return v1 != null ? v1 : v2;
 	}
+
+	public static boolean equals(String v1, String v2) {
+		return v1 == v2 || (v1 != null && v1.equals(v2));
+	}
+
+	public static boolean equalsIgnoreCase(String v1, String v2) {
+		return v1 == v2 || (v1 != null && v1.equalsIgnoreCase(v2));
+	}
 }

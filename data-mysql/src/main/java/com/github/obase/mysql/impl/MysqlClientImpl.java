@@ -15,8 +15,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
-import com.github.obase.app.Page;
-import com.github.obase.app.SystemException;
+import com.github.obase.Page;
+import com.github.obase.SystemException;
 import com.github.obase.base.ClassBase;
 import com.github.obase.mysql.JdbcMeta;
 import com.github.obase.mysql.MysqlErrno;

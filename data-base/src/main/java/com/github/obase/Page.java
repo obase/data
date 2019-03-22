@@ -1,4 +1,4 @@
-package com.github.obase.app;
+package com.github.obase;
 
 import java.util.List;
 

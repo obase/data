@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.github.obase.app.SystemException;
+import com.github.obase.SystemException;
 import com.github.obase.mysql.asm.AsmKit;
 
 /**

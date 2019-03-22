@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.github.obase.app.Page;
+import com.github.obase.Page;
 
 /**
  * Spring-mysqlclient core interface, which provides CRUD its bulk form @Table class.

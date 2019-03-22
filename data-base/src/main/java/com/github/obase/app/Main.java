@@ -3,6 +3,7 @@ package com.github.obase.app;
 import java.io.File;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -44,27 +45,73 @@ public class Main {
 			// 通过系统属性传值给ConfBase解析conf.xml
 			File file = new File(confFile);
 			if (!file.exists()) {
-				System.out.println("conf file can't found: " + confFile);
+				System.out.println("conf file not exist: " + confFile);
 				System.exit(1);
+			}
+			if (!file.isFile()) {
+				System.out.println("conf file is directory: " + confFile);
+				System.exit(2);
 			}
 			ConfBase.reset(file);
 		} else {
 			ConfBase.reset();
 		}
 
-		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] { "classpath:" + SPRING_XML_LOCATION }, false);
+		Context appCtx = null;
+		App appBean = null;
+		ClassPathXmlApplicationContext springContext = new ClassPathXmlApplicationContext(new String[] { "classpath:" + SPRING_XML_LOCATION }, false);
 		try {
-			ctx.addBeanFactoryPostProcessor(new BaseBeanDefinitionRegistryPostProcessor(false));
-			ctx.refresh();
-			ctx.close();
-			ctx = null;
-			System.exit(0);
+			springContext.addBeanFactoryPostProcessor(new BaseBeanDefinitionRegistryPostProcessor(false));
+			springContext.refresh();
+
+			Map<String, App> beans = springContext.getBeansOfType(App.class);
+			if (beans.size() == 0) {
+				System.out.println("can't found any app bean in spring context");
+				System.exit(3);
+			}
+
+			String appName = null;
+			if (args[0].charAt(0) != '-') {
+				appName = args[0];
+			}
+
+			if (appName == null && beans.size() == 1) {
+				appBean = beans.values().iterator().next();
+			} else {
+				for (Map.Entry<String, App> entry : beans.entrySet()) {
+					String name = entry.getKey();
+					App bean = entry.getValue();
+
+					Class<?> type = bean.getClass();
+					if (StringBase.equalsIgnoreCase(appName, name) || StringBase.equalsIgnoreCase(appName, type.getSimpleName()) || StringBase.equalsIgnoreCase(appName, type.getCanonicalName())) {
+						appBean = bean;
+						break;
+					}
+				}
+			}
+
+			if (appBean != null) {
+				Exception ex = null;
+				appCtx = new Context(springContext);
+				try {
+					appBean.declare(flags);
+					System.exit(appBean.execute(appCtx, flags));
+				} catch (Exception e) {
+					ex = e;
+				} finally {
+					appBean.destroy(appCtx, ex);
+				}
+				System.exit(4);
+			} else {
+				System.out.println("can't found any app bean in spring context");
+				System.exit(3);
+			}
 		} finally {
-			if (ctx != null) {
-				ctx.close();
+			if (springContext != null) {
+				springContext.close();
 			}
 		}
-		System.exit(1);
+		System.exit(5);
 	}
 
 	private static Set<String> parseBasePack(String springXmlPath) {

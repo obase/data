@@ -1,9 +1,13 @@
 package com.github.obase.app;
 
-public interface Context {
+import org.springframework.context.ApplicationContext;
 
-	void init() throws Exception;
+public class Context {
 
-	void destroy();
+	final ApplicationContext springContext;
+
+	protected Context(ApplicationContext springContext) {
+		this.springContext = springContext;
+	}
 
 }
