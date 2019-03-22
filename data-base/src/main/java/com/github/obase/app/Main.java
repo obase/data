@@ -1,61 +1,92 @@
 package com.github.obase.app;
 
-import java.util.HashSet;
+import java.io.File;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
+import com.github.obase.app.spring.BaseBeanDefinitionRegistryPostProcessor;
 import com.github.obase.base.ClassBase;
-import com.github.obase.base.ConstBase;
+import com.github.obase.base.ConfBase;
+import com.github.obase.base.SaxBase;
+import com.github.obase.base.StringBase;
 
 public class Main {
 
 	static final Logger logger = LogManager.getLogger(Main.class);
+
+	static final String SPRING_XML_LOCATION = "spring.xml";
 
 	public static void main(String[] args) {
 
 		// 帮助索引
 		for (String arg : args) {
 			if ("-help".equalsIgnoreCase(arg) || "-h".equalsIgnoreCase(arg)) {
-				printAppArgsHelp(System.out, ConstBase.APP_PACK_BASE);
-				return;
+				printAppArgsHelp(System.out, parseBasePack(SPRING_XML_LOCATION));
+				System.exit(0);
 			}
 		}
-		
-		// 解析参数, 第1个参数如果不是'-'选项,则是appName
 
-		//		String appName = null;
-		//		String[] appArgs = null;
-		//
-		//		// 分析第一个参数是否选项
-		//		if (args.length > 0 && args[0].charAt(0) != '-') {
-		//			appName = args[0];
-		//			appArgs = new String[args.length - 1];
-		//			System.arraycopy(args, 1, appArgs, 0, appArgs.length);
-		//		} else {
-		//			appArgs = args;
-		//		}
-		//
-		//		// 注解要分二次,第一次抽取main所需的选项. 第二次抽取app需要的选项
-		//
-		//		// 创建上下文,但不refresh
-		//		ClassPathXmlApplicationContext appctx = new ClassPathXmlApplicationContext(new String[] { "classpath:spring.xml" }, false);
-		//
-		//		// 动态注册需要的组件
-		//
-		//		// 动态刷新
-		//		appctx.refresh();
+		// 先解析配置文件, ConfBase优先上下文初始化
+		Flags flags = new Flags();
+		flags.defArg("conf", true, "the conf file conf.xml path. Default is /data/apps/$APP/conf.xml[.$ENV]");
+		flags.parse(args);
+
+		String confFile = flags.getArg("conf");
+		if (StringBase.isNotEmpty(confFile)) {
+			// 通过系统属性传值给ConfBase解析conf.xml
+			File file = new File(confFile);
+			if (!file.exists()) {
+				System.out.println("conf file can't found: " + confFile);
+				System.exit(1);
+			}
+			ConfBase.reset(file);
+		} else {
+			ConfBase.reset();
+		}
+
+		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] { "classpath:" + SPRING_XML_LOCATION }, false);
+		try {
+			ctx.addBeanFactoryPostProcessor(new BaseBeanDefinitionRegistryPostProcessor(false));
+			ctx.refresh();
+			ctx.close();
+			ctx = null;
+			System.exit(0);
+		} finally {
+			if (ctx != null) {
+				ctx.close();
+			}
+		}
+		System.exit(1);
 	}
 
-	private static void printAppArgsHelp(Appendable out, String base) {
+	private static Set<String> parseBasePack(String springXmlPath) {
+		Set<String> result = new LinkedHashSet<String>();
+		SaxBase.parse(ClassBase.getResourceAsStream(springXmlPath), new DefaultHandler() {
+			@Override
+			public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+				if ("component-scan".equalsIgnoreCase(localName)) {
+					String packs = attributes.getValue("base-package");
+					Collections.addAll(result, packs.split("\\s*,\\s*"));
+				}
+			}
+		});
+		return result;
+	}
+
+	private static void printAppArgsHelp(Appendable out, Set<String> packs) {
 		try {
-			Set<String> packs = new HashSet<String>(1);
-			packs.add(base);
 			Set<Class<?>> appClsSet = ClassBase.scanPackClass(packs, App.class);
 			for (Class<?> cls : appClsSet) {
 				App app = (App) cls.newInstance();
-				Args args = new Args();
+				Flags args = new Flags();
 				app.declare(args);
 				out.append(args.help(cls)).append("\n");
 			}

@@ -7,12 +7,12 @@ package com.github.obase.app;
 public abstract class App {
 
 	// 声明参数, 包括添加添加
-	public void declare(Args args) {
+	public void declare(Flags args) {
 		// nothing
 	}
 
 	// 处理进程,最后返回exit_code
-	public abstract int execute(Context ctx, Args args) throws Exception;
+	public abstract int execute(Context ctx, Flags args) throws Exception;
 
 	// 销毁进程
 	public void destroy(Context ctx, Exception e) {

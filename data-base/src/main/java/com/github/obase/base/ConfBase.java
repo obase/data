@@ -27,46 +27,50 @@ public class ConfBase implements ConstBase {
 
 	final Map<String, Object> data = new HashMap<String, Object>();
 
-	ConfBase() {
+	/**
+	 * 加载规则:
+	 * 1. 系统属性/环境变量: CONF_FILE
+	 * 2. /data/apps/$APP/conf.yml.$ENV
+	 * 3. classpath:conf.yml.$ENV
+	 */
+	public static ConfBase reset() {
+
 		InputStream in = null;
-		String confFile = getSysCnf(CONF_FILE, null);
 		try {
-			if (StringBase.isNotEmpty(confFile)) {
-				in = new FileInputStream(confFile);
-			} else {
-				String confName = CONF_NAME;
-				String env = getSysCnf(ENV, null);
-				if (StringBase.isNotEmpty(env)) {
-					confName += "." + env;
-				}
-				in = ClassBase.getResourceAsStream(confName);
-				if (in == null && !CONF_NAME.equals(confName)) {
-					in = ClassBase.getResourceAsStream(CONF_NAME);
-				}
-				if (in == null) {
-					String app = getSysCnf(APP, null);
-					if (StringBase.isNotEmpty(app)) {
-						File file = new File(APP_DIR + app + "/" + confName);
-						if (!file.exists() && !CONF_NAME.equals(confName)) {
-							file = new File(APP_DIR + app + "/" + CONF_NAME);
-						}
-						if (file.exists()) {
-							in = new FileInputStream(file);
-						}
-					}
+			String confFile = getSysCnf(CONF_FILE, null);
+			if (confFile != null) {
+				File file = new File(confFile);
+				if (file.exists() && file.isFile()) {
+					in = new BufferedInputStream(new FileInputStream(file));
 				}
 			}
 
+			String confName = CONF_NAME;
+			String env = getSysCnf(ENV, null);
+			if (env != null) {
+				confName += "." + env;
+			}
+			if (in == null) {
+				String app = getSysCnf(APP, null);
+				if (app != null) {
+					File file = new File(APP_DIR + app, confName);
+					if (file.exists() && file.isFile()) {
+						in = new BufferedInputStream(new FileInputStream(file));
+					}
+				}
+			}
+			if (in == null) {
+				in = ClassBase.getResourceAsStream(confName);
+			}
 			if (in != null) {
 				Yaml y = new Yaml();
 				Map<String, Object> ret = y.load(new BufferedInputStream(in));
 				if (ret.size() > 0) {
-					data.putAll(ret);
+					Singleton.data.putAll(ret);
 				}
 			}
-
 		} catch (FileNotFoundException e) {
-			logger.error("file not found: " + confFile);
+			logger.error("file not found: ", e);
 		} finally {
 			if (in != null) {
 				try {
@@ -76,7 +80,36 @@ public class ConfBase implements ConstBase {
 				}
 			}
 		}
+		return Singleton;
+	}
 
+	/**
+	 * 明确加载路径
+	 */
+	public static ConfBase reset(File file) {
+
+		InputStream in = null;
+		try {
+			in = new BufferedInputStream(new FileInputStream(file));
+			if (in != null) {
+				Yaml y = new Yaml();
+				Map<String, Object> ret = y.load(new BufferedInputStream(in));
+				if (ret.size() > 0) {
+					Singleton.data.putAll(ret);
+				}
+			}
+		} catch (FileNotFoundException e) {
+			logger.error("file not found: " + file);
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					logger.error("close inputstream failed", e);
+				}
+			}
+		}
+		return Singleton;
 	}
 
 	// 延迟初始化

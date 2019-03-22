@@ -7,6 +7,10 @@
 	http://www.springframework.org/schema/context/spring-context.xsd
 	http://obase.github.io/schema/config https://obase.github.io/schema/obase-config-1.2.xsd">
 
-	<context:component-scan base-package=""></context:component-scan>
-
+	<context:component-scan base-package="com.seasun.jx3dc.app" />
+	<bean id="b1" class="com.seasun.jx3dc.app.comp.Bean1">
+		<property name="name" value="Jason.He" />
+		<property name="age" value="36" />
+	</bean>
+	<!-- <bean id="b2" class="com.seasun.jx3dc.app.comp.Bean2"/> -->
 </beans>

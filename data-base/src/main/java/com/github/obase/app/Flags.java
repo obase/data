@@ -3,7 +3,7 @@ package com.github.obase.app;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class Args {
+public class Flags {
 
 	static class Flag {
 		final String name; // flag name
@@ -37,7 +37,7 @@ public class Args {
 		return args;
 	}
 
-	public void parse(String[] args, int start) {
+	public void parse(String[] args) {
 		this.args = args;
 		for (int i = 0; i < args.length;) {
 			if (args[i].charAt(0) == '-') {
