@@ -68,7 +68,7 @@ public class Main {
 
 			springContext.addBeanFactoryPostProcessor(new BaseBeanDefinitionRegistryPostProcessor(false));
 			for (Class<?> cls : ClassBase.scanPackClass(ObjectBase.asSet("com.github.obase.beans"), BeanDefinitionRegistryPostProcessor.class)) {
-				springContext.addBeanFactoryPostProcessor((BeanFactoryPostProcessor) cls.newInstance());
+				springContext.addBeanFactoryPostProcessor((BeanDefinitionRegistryPostProcessor) cls.newInstance());
 			}
 			springContext.refresh();
 
@@ -105,6 +105,7 @@ public class Main {
 					appBean.declare(flags);
 					System.exit(appBean.execute(appCtx, flags));
 				} catch (Exception e) {
+					logger.error("app execute failed", e);
 					ex = e;
 				} finally {
 					appBean.destroy(appCtx, ex);

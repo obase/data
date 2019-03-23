@@ -1,18 +1,18 @@
-package com.github.obase.beans;
+package com.github.obase.mysql;
 
 public class MysqlConfig {
-	String key;
-	String address;
-	String database;
-	String username;
-	String password;
-	int maxIdleConns;
-	int maxOpenConns;
-	int connMaxLifetime; //秒
+	public String key;
+	public String address;
+	public String database;
+	public String username;
+	public String password;
+	public int maxIdleConns;
+	public int maxOpenConns;
+	public int connMaxLifetime; //秒
 
-	boolean showSql;
-	String packagesToScan;
-	String configLocations;
+	public boolean showSql;
+	public String packagesToScan;
+	public String configLocations;
 
 	public String getKey() {
 		return key;
