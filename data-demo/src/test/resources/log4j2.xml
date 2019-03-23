@@ -40,7 +40,7 @@
 			<AppenderRef ref="Alarm" />
 		</Logger>
 		<Root level="debug">
-			<AppenderRef ref="File" />
+			<AppenderRef ref="Stdout" />
 		</Root>
 	</Loggers>
 </Configuration>
