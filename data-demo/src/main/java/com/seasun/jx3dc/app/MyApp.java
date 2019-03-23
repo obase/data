@@ -29,8 +29,9 @@ public class MyApp extends App {
 
 	@Override
 	public int execute(Context ctx, Flags args) throws Exception {
-		List<Map> list = mysql.query("test.selectAccount", Map.class, null);
+		List<Map> list = mysql.query("test.selectAccount", null, null);
 		System.out.println(list);
+		logger.info(list);
 		return 0;
 	}
 
