@@ -44,23 +44,24 @@ public class ConfBase implements ConstBase {
 					in = new BufferedInputStream(new FileInputStream(file));
 				}
 			}
-
-			String confName = CONF_NAME;
-			String env = getSysCnf(ENV, null);
-			if (env != null) {
-				confName += "." + env;
-			}
 			if (in == null) {
-				String app = getSysCnf(APP, null);
-				if (app != null) {
-					File file = new File(APP_DIR + app, confName);
-					if (file.exists() && file.isFile()) {
-						in = new BufferedInputStream(new FileInputStream(file));
+				String confName = CONF_NAME;
+				String env = getSysCnf(ENV, null);
+				if (env != null) {
+					confName += "." + env;
+				}
+				if (in == null) {
+					String app = getSysCnf(APP, null);
+					if (app != null) {
+						File file = new File(APP_DIR + app, confName);
+						if (file.exists() && file.isFile()) {
+							in = new BufferedInputStream(new FileInputStream(file));
+						}
 					}
 				}
-			}
-			if (in == null) {
-				in = ClassBase.getResourceAsStream(confName);
+				if (in == null) {
+					in = ClassBase.getResourceAsStream(confName);
+				}
 			}
 			if (in != null) {
 				Yaml y = new Yaml();

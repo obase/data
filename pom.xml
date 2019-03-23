@@ -22,8 +22,8 @@
 		<kafka.version>2.1.1</kafka.version>
 		<junit.version>4.12</junit.version>
 		<rules.version>1.19.0</rules.version>
-		<mysql.version>5.1.46</mysql.version>
-		<c3p0.version>0.9.5.2</c3p0.version>
+		<mysql.version>5.1.47</mysql.version>
+		<c3p0.version>0.9.5.3</c3p0.version>
 	</properties>
 
 	<dependencyManagement>

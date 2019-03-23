@@ -65,12 +65,13 @@ public class ClassBase {
 
 		Set<Class<?>> clazzSet = new HashSet<Class<?>>(cpathSet.size());
 		for (String cpath : cpathSet) {
+			int end = cpath.lastIndexOf(".class");
+			if (end == -1) {
+				end = cpath.length();
+			}
+			String fullname = cpath.substring(0, end).replace('/', '.');
 			try {
-				int end = cpath.lastIndexOf(".class");
-				if (end == -1) {
-					end = cpath.length();
-				}
-				Class<?> clazz = ClassBase.forName(cpath.substring(0, end).replace('/', '.'));
+				Class<?> clazz = ClassBase.forName(fullname);
 				if (parent.isAssignableFrom(clazz) && parent != clazz) { // 必须实现APP及非abstract
 					int mfs = clazz.getModifiers();
 					if (Modifier.isPublic(mfs) && !Modifier.isAbstract(mfs)) {
@@ -79,7 +80,7 @@ public class ClassBase {
 				}
 			} catch (ClassNotFoundException e) {
 				// skip the unkonw class
-				logger.error("class not found: %s", cpath);
+				logger.error("class not found: {}", fullname);
 			}
 		}
 		return clazzSet;
@@ -111,10 +112,11 @@ public class ClassBase {
 
 	public static void scanPackClassInFile(Set<String> ret, File dir, String prefix) throws IOException {
 		for (File file : dir.listFiles()) {
-			if (file.isFile() && file.getName().endsWith(".class")) {
-				ret.add(prefix + "/" + file.getName());
+			String fname = file.getName();
+			if (file.isFile() && fname.endsWith(".class")) {
+				ret.add(prefix + "/" + fname);
 			} else if (file.isDirectory()) {
-				scanPackClassInFile(ret, file, prefix);
+				scanPackClassInFile(ret, file, prefix + "/" + fname); // FIXBUG: 逐级附加
 			}
 		}
 	}

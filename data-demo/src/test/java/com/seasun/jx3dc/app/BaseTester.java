@@ -1,15 +1,20 @@
 package com.seasun.jx3dc.app;
 
-import com.github.obase.base.ConfBase;
+import java.io.IOException;
+
+import com.github.obase.app.Main;
 
 public class BaseTester {
 
-	public static void main(String[] args) throws InterruptedException {
-		//		System.out.println(BaseTester.class.getResource("/com/seasun/jx3dc/app"));
-		//		System.out.println(System.getProperties());
-		//		Main.main(new String[] { "-a" });
-		//		System.setProperty(ConfBase.CONF_FILE, "E:\\jx3workspace\\conf.yml");
-		System.out.println(ConfBase.getBoolean("server.debug", null));
+	public static void main(String[] args) throws InterruptedException, IOException {
+				Main.main(new String[] {});
+//		URL url = ClassBase.getResource("/spring.xml");//ClassBase.getResourceAsStream("/spring.xml");
+//		System.out.println(url);
+//		InputStream in = ClassBase.getResourceAsStream("/spring.xml");
+//		System.out.println(in == null);
+//		if (in != null) {
+//			in.close();
+//		}
 	}
 
 	static class Server {

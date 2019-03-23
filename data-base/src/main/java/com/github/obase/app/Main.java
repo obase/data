@@ -71,7 +71,7 @@ public class Main {
 			}
 
 			String appName = null;
-			if (args[0].charAt(0) != '-') {
+			if (args.length > 0 && args[0].charAt(0) != '-') {
 				appName = args[0];
 			}
 
