@@ -46,7 +46,7 @@
 	<bean id="transactionManager" class="com.github.obase.spring.transaction.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
-	<tx:annotation-driven transaction-manager="transactionManager" />
+	<tx:annotation-driven  transaction-manager="transactionManager" />
 
 	<!-- mysql客户端 -->
 	<bean id="mysqlClient" class="com.github.obase.mysql.impl.MysqlClientImpl" init-method="init">

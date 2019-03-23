@@ -1,6 +1,7 @@
 package com.github.obase.app;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -8,14 +9,17 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.github.obase.app.spring.BaseBeanDefinitionRegistryPostProcessor;
+import com.github.obase.SystemException;
 import com.github.obase.base.ClassBase;
 import com.github.obase.base.ConfBase;
+import com.github.obase.base.ObjectBase;
 import com.github.obase.base.SaxBase;
 import com.github.obase.base.StringBase;
 
@@ -61,7 +65,11 @@ public class Main {
 		App appBean = null;
 		ClassPathXmlApplicationContext springContext = new ClassPathXmlApplicationContext(new String[] { "classpath:" + SPRING_XML_LOCATION }, false);
 		try {
+
 			springContext.addBeanFactoryPostProcessor(new BaseBeanDefinitionRegistryPostProcessor(false));
+			for (Class<?> cls : ClassBase.scanPackClass(ObjectBase.asSet("com.github.obase.beans"), BeanDefinitionRegistryPostProcessor.class)) {
+				springContext.addBeanFactoryPostProcessor((BeanFactoryPostProcessor) cls.newInstance());
+			}
 			springContext.refresh();
 
 			Map<String, App> beans = springContext.getBeansOfType(App.class);
@@ -106,6 +114,8 @@ public class Main {
 				System.out.println("can't found any app bean in spring context");
 				System.exit(3);
 			}
+		} catch (ReflectiveOperationException | IOException e1) {
+			throw new SystemException(e1);
 		} finally {
 			if (springContext != null) {
 				springContext.close();

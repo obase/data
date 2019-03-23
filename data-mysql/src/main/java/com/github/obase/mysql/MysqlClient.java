@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.support.TransactionCallback;
+
 import com.github.obase.Page;
 
 /**
@@ -135,4 +138,8 @@ public interface MysqlClient {
 
 	<T, R> List<R> batchExecute(String updateId, Class<R> generateKeyType, List<T> params) throws SQLException;
 
+	// =====================================================
+	// Transaction处理方法
+	// =====================================================
+	<T> T transaction(TransactionCallback<T> action) throws TransactionException;
 }

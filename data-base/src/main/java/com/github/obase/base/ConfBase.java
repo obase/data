@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.cglib.beans.BeanMap;
 import org.yaml.snakeyaml.Yaml;
+
+import com.github.obase.SystemException;
 
 /**
  * # 配置读取顺序:
@@ -172,10 +175,7 @@ public class ConfBase implements ConstBase {
 	public static <T> T bind(String xpath, T obj) {
 		Object val = get(xpath);
 		if (val instanceof Map) {
-			Map mval = (Map) val;
-			BeanMap bm = BeanMap.create(obj);
-			bm.putAll(mval);
-			return obj;
+			return ObjectBase.convert((Map) val, obj);
 		}
 		return null;
 	}
@@ -215,6 +215,29 @@ public class ConfBase implements ConstBase {
 			return (List<T>) val;
 		}
 		return def;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <T> List<T> bindObjectList(String xpath, Class<T> type) {
+		try {
+			List<T> list = new LinkedList<T>();
+			Object val = get(xpath);
+			if (val instanceof List) {
+				List lval = (List) val;
+				for (Object v : lval) {
+					if (v instanceof Map) {
+						list.add(ObjectBase.convert((Map) v, type));
+					} else {
+						list.add(null);
+					}
+				}
+			} else if (val instanceof Map) {
+				list.add(ObjectBase.convert((Map) val, type));
+			}
+			return list;
+		} catch (ReflectiveOperationException e) {
+			throw new SystemException(e);
+		}
 	}
 
 	@SuppressWarnings("rawtypes")

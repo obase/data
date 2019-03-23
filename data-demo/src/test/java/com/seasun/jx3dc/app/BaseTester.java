@@ -7,14 +7,19 @@ import com.github.obase.app.Main;
 public class BaseTester {
 
 	public static void main(String[] args) throws InterruptedException, IOException {
-				Main.main(new String[] {});
-//		URL url = ClassBase.getResource("/spring.xml");//ClassBase.getResourceAsStream("/spring.xml");
-//		System.out.println(url);
-//		InputStream in = ClassBase.getResourceAsStream("/spring.xml");
-//		System.out.println(in == null);
-//		if (in != null) {
-//			in.close();
-//		}
+		//		Main.main(new String[] {});
+		//		URL url = ClassBase.getResource("/spring.xml");//ClassBase.getResourceAsStream("/spring.xml");
+		//		System.out.println(url);
+		//		InputStream in = ClassBase.getResourceAsStream("/spring.xml");
+		//		System.out.println(in == null);
+		//		if (in != null) {
+		//			in.close();
+		//		}
+
+		TestInf inf = new TestInf() {
+		};
+		System.out.println(inf.info());
+		System.out.println(TestInf.version());
 	}
 
 	static class Server {

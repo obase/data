@@ -1,4 +1,4 @@
-package com.github.obase.app.spring;
+package com.github.obase.app;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanDefinitionStoreException;

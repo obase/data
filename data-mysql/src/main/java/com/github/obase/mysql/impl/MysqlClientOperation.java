@@ -13,12 +13,16 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.github.obase.Page;
 import com.github.obase.mysql.JdbcMeta;
 import com.github.obase.mysql.MysqlClient;
 import com.github.obase.mysql.PstmtMeta;
 import com.github.obase.mysql.sql.SqlDqlKit;
+import com.github.obase.spring.transaction.DataSourceTransactionManager;
 import com.github.obase.spring.transaction.DataSourceUtils;
 
 /**
@@ -33,10 +37,12 @@ public abstract class MysqlClientOperation implements MysqlClient {
 	// 核心属性
 	// =============================================
 	protected DataSource dataSource;
+	protected TransactionTemplate transactionTemplate;
 	protected boolean showSql; // show sql or not
 
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
+		this.transactionTemplate = new TransactionTemplate(new DataSourceTransactionManager(dataSource));
 	}
 
 	public void setShowSql(boolean showSql) {
@@ -510,4 +516,7 @@ public abstract class MysqlClientOperation implements MysqlClient {
 		}
 	}
 
+	public <T> T transaction(TransactionCallback<T> action) throws TransactionException {
+		return transactionTemplate.execute(action);
+	}
 }
