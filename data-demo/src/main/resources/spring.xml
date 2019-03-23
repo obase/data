@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:context="http://www.springframework.org/schema/context" xmlns:config="http://obase.github.io/schema/config"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:config="http://obase.github.io/schema/config" xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 	http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/context
 	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx.xsd
 	http://obase.github.io/schema/config https://obase.github.io/schema/obase-config-1.2.xsd">
 
 	<context:component-scan base-package="com.seasun.jx3dc.app" />
@@ -39,4 +41,19 @@
 		<!--因性能消耗大请只在需要的时候使用它。如果设为true那么在每个connection提交的 时候都将校验其有效性。建议使用idleConnectionTestPeriod或automaticTestTable 等方法来提升连接测试的性能。Default: false -->
 		<property name="testConnectionOnCheckout" value="false" />
 	</bean>
+
+	<!-- 事务上下文 -->
+	<bean id="transactionManager" class="com.github.obase.spring.transaction.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<!-- mysql客户端 -->
+	<bean id="mysqlClient" class="com.github.obase.mysql.impl.MysqlClientImpl" init-method="init">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan" value="com.seasun.jx3dc.entity" />
+		<property name="configLocations" value="classpath*:/query/**/*.xml" />
+		<property name="showSql" value="true" /> <!-- 发布设置false -->
+	</bean>
+
 </beans>

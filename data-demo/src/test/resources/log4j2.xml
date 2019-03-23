@@ -31,7 +31,7 @@
 
 		<Logger name="com.mchange.v2" level="warn" additivity="false" />
 		<Logger name="org.springframework" level="warn" additivity="false" />
-
+		<Logger name="com.github.obase" level="warn" additivity="false" />
 
 		<Logger name="Trace" level="info" additivity="false">
 			<AppenderRef ref="Trace" />
