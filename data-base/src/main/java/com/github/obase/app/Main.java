@@ -1,7 +1,10 @@
 package com.github.obase.app;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -9,9 +12,10 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -19,7 +23,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.github.obase.SystemException;
 import com.github.obase.base.ClassBase;
 import com.github.obase.base.ConfBase;
-import com.github.obase.base.ObjectBase;
 import com.github.obase.base.SaxBase;
 import com.github.obase.base.StringBase;
 
@@ -67,7 +70,7 @@ public class Main {
 		try {
 
 			springContext.addBeanFactoryPostProcessor(new BaseBeanDefinitionRegistryPostProcessor(false));
-			for (Class<?> cls : ClassBase.scanPackClass(ObjectBase.asSet("com.github.obase.beans"), BeanDefinitionRegistryPostProcessor.class)) {
+			for (Class<?> cls : scanBeanDefinitionRegistryPostProcessor()) {
 				springContext.addBeanFactoryPostProcessor((BeanDefinitionRegistryPostProcessor) cls.newInstance());
 			}
 			springContext.refresh();
@@ -153,4 +156,41 @@ public class Main {
 		}
 	}
 
+	private static Set<Class<?>> scanBeanDefinitionRegistryPostProcessor() throws IOException {
+
+		Set<Class<?>> sets = new LinkedHashSet<Class<?>>();
+
+		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+		Resource[] rss = resolver.getResources("classpath*:/META-INF/*.bdrpp");
+		if (rss != null && rss.length > 0) {
+			StringBuilder sb = new StringBuilder(1024);
+			for (Resource rs : rss) {
+				sb.setLength(0);
+				InputStream in = null;
+				try {
+					in = rs.getInputStream();
+					if (in != null) {
+						BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+						for (String line = null; (line = reader.readLine()) != null;) {
+							line = line.trim();
+							try {
+								Class<?> cls = ClassBase.forName(line);
+								if (BeanDefinitionRegistryPostProcessor.class.isAssignableFrom(cls)) {
+									sets.add(cls);
+								}
+							} catch (ClassNotFoundException e) {
+								logger.error("class not found: {}", line);
+							}
+						}
+					}
+				} finally {
+					if (in != null) {
+						in.close();
+					}
+				}
+			}
+		}
+
+		return sets;
+	}
 }
