@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import com.github.obase.app.App;
 import com.github.obase.app.Context;
 import com.github.obase.app.Flags;
-import com.github.obase.mysql.MysqlClient;
+import com.github.obase.mysql.Mysql;
 
 @Component
 public class MyApp extends App {
@@ -19,7 +19,7 @@ public class MyApp extends App {
 	static final Logger logger = LogManager.getLogger(MyApp.class);
 
 	@Autowired
-	MysqlClient mysql;
+	Mysql mysql;
 
 	@Override
 	public void declare(Flags args) {

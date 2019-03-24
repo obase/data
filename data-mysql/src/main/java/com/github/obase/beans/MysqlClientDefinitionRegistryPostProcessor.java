@@ -16,7 +16,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import com.github.obase.base.ConfBase;
 import com.github.obase.base.ObjectBase;
 import com.github.obase.base.StringBase;
-import com.github.obase.mysql.MysqlConfig;
 import com.github.obase.mysql.impl.MysqlClientImpl;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 

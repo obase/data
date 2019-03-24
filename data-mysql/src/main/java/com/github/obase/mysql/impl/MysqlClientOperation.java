@@ -19,7 +19,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.github.obase.Page;
 import com.github.obase.mysql.JdbcMeta;
-import com.github.obase.mysql.MysqlClient;
+import com.github.obase.mysql.Mysql;
 import com.github.obase.mysql.PstmtMeta;
 import com.github.obase.mysql.sql.SqlDqlKit;
 import com.github.obase.spring.transaction.DataSourceTransactionManager;
@@ -29,7 +29,7 @@ import com.github.obase.spring.transaction.DataSourceUtils;
  * MysqlClient实现类, 处理缓存与初始化相关工作
  */
 @SuppressWarnings("unchecked")
-public abstract class MysqlClientOperation implements MysqlClient {
+public abstract class MysqlClientOperation implements Mysql {
 
 	static final Log logger = LogFactory.getLog(MysqlClientOperation.class);
 
