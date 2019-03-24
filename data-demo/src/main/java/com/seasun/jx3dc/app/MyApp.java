@@ -29,6 +29,7 @@ public class MyApp extends App {
 
 	@Override
 	public int execute(Context ctx, Flags args) throws Exception {
+		@SuppressWarnings("rawtypes")
 		List<Map> list = mysql.query("test.selectAccount", null, null);
 		System.out.println(list);
 		logger.info(list);
