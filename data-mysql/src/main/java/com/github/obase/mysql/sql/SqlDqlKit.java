@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.obase.mysql.Mysql;
+import com.github.obase.mysql.MysqlClient;
 import com.github.obase.mysql.PstmtMeta;
 
 public class SqlDqlKit extends SqlKit {
@@ -121,7 +121,7 @@ public class SqlDqlKit extends SqlKit {
 		}
 		StringBuilder sb = new StringBuilder(meta.psql.length() + 128);
 		sb.append(meta.psql, 0, meta.order == PstmtMeta.UNSET ? meta.psql.length() : meta.order);
-		sb.append(" ORDER BY ").append(identifier(field)).append(" ").append(desc ? Mysql.DESC : Mysql.ASC);
+		sb.append(" ORDER BY ").append(identifier(field)).append(" ").append(desc ? MysqlClient.DESC : MysqlClient.ASC);
 		sb.append(" LIMIT ?, ?");
 		return sb.toString();
 	}

@@ -22,7 +22,7 @@ import com.github.obase.Page;
  * @author hezhaowu
  * @since 1.1.1-SNAPSHOT
  */
-public interface Mysql {
+public interface MysqlClient {
 
 	String DESC = "DESC"; // 降序排列
 	String ASC = "ASC"; // 升级排列
