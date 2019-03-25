@@ -182,6 +182,10 @@ public class ConfBase implements ConstBase {
 
 	public static Integer getInteger(String xpath, Integer def) {
 		Object val = get(xpath);
+		return toInteger(val, def);
+	}
+
+	public static Integer toInteger(Object val, Integer def) {
 		if (val instanceof Number) {
 			return ((Number) val).intValue();
 		} else if (val instanceof String) {
@@ -192,6 +196,10 @@ public class ConfBase implements ConstBase {
 
 	public static String getString(String xpath, String def) {
 		Object val = get(xpath);
+		return toString(val, def);
+	}
+
+	public static String toString(Object val, String def) {
 		if (val instanceof Number) {
 			return val.toString();
 		} else if (val instanceof String) {
@@ -202,8 +210,16 @@ public class ConfBase implements ConstBase {
 
 	public static Boolean getBoolean(String xpath, Boolean def) {
 		Object val = get(xpath);
+		return toBoolean(val, def);
+	}
+
+	public static Boolean toBoolean(Object val, Boolean def) {
 		if (val instanceof Boolean) {
 			return (Boolean) val;
+		} else if (val instanceof String) {
+			return "true".equalsIgnoreCase((String) val);
+		} else if (val instanceof Number) {
+			return ((Number) val).intValue() != 0;
 		}
 		return def;
 	}

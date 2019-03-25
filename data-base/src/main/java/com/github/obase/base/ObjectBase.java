@@ -1,5 +1,6 @@
 package com.github.obase.base;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -50,5 +51,13 @@ public class ObjectBase {
 		Set<T> sets = new LinkedHashSet<T>();
 		Collections.addAll(sets, args);
 		return sets;
+	}
+
+	public static <T> boolean isEmpty(Collection<T> c) {
+		return c == null || c.size() == 0;
+	}
+
+	public static <K, V> boolean isEmpty(Map<K, V> m) {
+		return m == null || m.size() == 0;
 	}
 }
