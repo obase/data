@@ -373,7 +373,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<modules>
-		<module>data-mongo</module>
-	</modules>
 </project>
