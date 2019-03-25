@@ -32,16 +32,22 @@ public class MongoClientFactoryBean implements FactoryBean<MongoClient> {
 		MongoClientSettings.Builder bd = MongoClientSettings.builder();
 		bd.applyConnectionString(makeConnectionString(config));
 		bd.applyToConnectionPoolSettings(p -> {
-			p.minSize(config.minPoolSize);
-			p.maxSize(config.maxPoolSize);
-			p.maxConnectionIdleTime(config.maxPoolIdleTimeMS, TimeUnit.MILLISECONDS);
-			p.maxWaitTime(config.maxPoolWaitTimeMS, TimeUnit.MICROSECONDS);
+			if (config.minPoolSize > 0)
+				p.minSize(config.minPoolSize);
+			if (config.maxPoolSize > 0)
+				p.maxSize(config.maxPoolSize);
+			if (config.maxPoolIdleTimeMS > 0)
+				p.maxConnectionIdleTime(config.maxPoolIdleTimeMS, TimeUnit.MILLISECONDS);
+			if (config.maxPoolWaitTimeMS > 0)
+				p.maxWaitTime(config.maxPoolWaitTimeMS, TimeUnit.MICROSECONDS);
 		});
 		bd.applyToSocketSettings(s -> {
-			s.readTimeout(config.readTimeout, TimeUnit.SECONDS);
-			s.connectTimeout(config.connectTimeout, TimeUnit.SECONDS);
+			if (config.readTimeout > 0)
+				s.readTimeout(config.readTimeout, TimeUnit.SECONDS);
+			if (config.connectTimeout > 0)
+				s.connectTimeout(config.connectTimeout, TimeUnit.SECONDS);
 		});
-		if (ObjectBase.isEmpty(config.safe)) {
+		if (ObjectBase.isNotEmpty(config.safe)) {
 			int w = 0;
 			String wmode = null;
 			String rmode = null;

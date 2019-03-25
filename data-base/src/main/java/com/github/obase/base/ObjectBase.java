@@ -57,7 +57,15 @@ public class ObjectBase {
 		return c == null || c.size() == 0;
 	}
 
+	public static <T> boolean isNotEmpty(Collection<T> c) {
+		return c != null && c.size() > 0;
+	}
+
 	public static <K, V> boolean isEmpty(Map<K, V> m) {
 		return m == null || m.size() == 0;
+	}
+
+	public static <K, V> boolean isNotEmpty(Map<K, V> m) {
+		return m != null && m.size() > 0;
 	}
 }

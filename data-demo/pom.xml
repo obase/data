@@ -18,6 +18,10 @@
 			<artifactId>data-mysql</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.github.obase</groupId>
+			<artifactId>data-mongo</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
