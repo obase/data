@@ -4,11 +4,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import com.github.obase.app.App;
 import com.github.obase.app.Flags;
 import com.github.obase.app.Context;
 
+@Component
 public class MyApp2 extends App {
 
 	static final Logger logger = LogManager.getLogger(MyApp2.class);

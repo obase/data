@@ -7,7 +7,7 @@ import com.github.obase.app.Main;
 public class BaseTester {
 
 	public static void main(String[] args) throws InterruptedException, IOException {
-		Main.main(new String[] {});
+		Main.main(new String[] {"MyApp2"});
 		//		URL url = ClassBase.getResource("/spring.xml");//ClassBase.getResourceAsStream("/spring.xml");
 		//		System.out.println(url);
 		//		InputStream in = ClassBase.getResourceAsStream("/spring.xml");
