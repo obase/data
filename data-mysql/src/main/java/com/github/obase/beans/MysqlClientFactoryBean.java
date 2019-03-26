@@ -1,10 +1,14 @@
 package com.github.obase.beans;
 
 import java.beans.PropertyVetoException;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import com.github.obase.base.ObjectBase;
 import com.github.obase.base.StringBase;
@@ -12,14 +16,20 @@ import com.github.obase.mysql.MysqlClient;
 import com.github.obase.mysql.impl.MysqlClientImpl;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-public class MysqlClientFactoryBean implements FactoryBean<MysqlClient> {
+public class MysqlClientFactoryBean implements FactoryBean<MysqlClient>, ApplicationContextAware {
 
 	static final Logger logger = LogManager.getLogger(MysqlClientFactoryBean.class);
 
 	final MysqlConfig config;
+	ApplicationContext applicationContext;
 
 	public MysqlClientFactoryBean(MysqlConfig config) {
 		this.config = config;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 
 	@Override
@@ -62,13 +72,25 @@ public class MysqlClientFactoryBean implements FactoryBean<MysqlClient> {
 		MysqlClientImpl impl = new MysqlClientImpl();
 		impl.setDataSource(ds);
 		impl.setShowSql(config.showSql);
-		if (StringBase.isNotEmpty(config.configLocations)) {
-			impl.setConfigLocations(config.configLocations);
+
+		MysqlConfig builtin;
+		Map<String, MysqlConfig> beans = applicationContext.getBeansOfType(MysqlConfig.class);
+		if (beans.size() == 0) {
+			builtin = beans.values().iterator().next();
+		} else {
+			builtin = beans.get(MysqlConfig.BUILTIN_MYSQL_CONFIG_NAME);
+		}
+
+		if (builtin != null && StringBase.isNotEmpty(builtin.configLocations)) {
+			impl.setConfigLocations(builtin.configLocations);
 		} else {
 			impl.setConfigLocations("classpath*:/query/**/*.xml");
 		}
-		if (StringBase.isNotEmpty(config.packagesToScan)) {
-			impl.setPackagesToScan(config.packagesToScan);
+		if (builtin != null && StringBase.isNotEmpty(builtin.packagesToScan)) {
+			impl.setPackagesToScan(builtin.packagesToScan);
+		}
+		if (builtin != null && builtin.updateTable) {
+			impl.setUpdateTable(builtin.updateTable);
 		}
 		impl.init();
 		return impl;

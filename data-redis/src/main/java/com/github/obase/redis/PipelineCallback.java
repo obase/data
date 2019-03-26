@@ -1,9 +1,11 @@
 package com.github.obase.redis;
 
+import java.util.List;
+
 import redis.clients.jedis.Pipeline;
 
 @FunctionalInterface
 public interface PipelineCallback {
 
-	void pipeline(Pipeline pipeline);
+	List<Object> pipeline(Pipeline pipeline);
 }

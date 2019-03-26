@@ -1,6 +1,9 @@
 package com.github.obase.beans;
 
 public class MysqlConfig {
+
+	public static final String BUILTIN_MYSQL_CONFIG_NAME = "builtinMysqlConfig";
+
 	public String key;
 	public String address;
 	public String database;
@@ -13,6 +16,7 @@ public class MysqlConfig {
 	public boolean showSql;
 	public String packagesToScan;
 	public String configLocations;
+	public boolean updateTable;
 
 	public String getKey() {
 		return key;
@@ -100,6 +104,14 @@ public class MysqlConfig {
 
 	public void setConfigLocations(String configLocations) {
 		this.configLocations = configLocations;
+	}
+
+	public boolean isUpdateTable() {
+		return updateTable;
+	}
+
+	public void setUpdateTable(boolean updateTable) {
+		this.updateTable = updateTable;
 	}
 
 }
