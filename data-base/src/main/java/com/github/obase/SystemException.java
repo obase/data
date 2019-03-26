@@ -11,12 +11,14 @@ public final class SystemException extends RuntimeException {
 	public final String tag;
 
 	public SystemException(int code, String msg, String tag) {
+		super("code=" + code + ",msg=" + msg + ",tag=" + tag);
 		this.code = code;
 		this.msg = msg;
 		this.tag = tag;
 	}
 
 	public SystemException(int code, String msg) {
+		super("code=" + code + ",msg=" + msg);
 		this.code = code;
 		this.msg = msg;
 		this.tag = null;
