@@ -75,7 +75,7 @@ public class MysqlClientFactoryBean implements FactoryBean<MysqlClient>, Applica
 
 		MysqlConfig builtin;
 		Map<String, MysqlConfig> beans = applicationContext.getBeansOfType(MysqlConfig.class);
-		if (beans.size() == 0) {
+		if (beans.size() == 1) {
 			builtin = beans.values().iterator().next();
 		} else {
 			builtin = beans.get(MysqlConfig.BUILTIN_MYSQL_CONFIG_NAME);
