@@ -2,8 +2,7 @@ package com.github.obase.redis;
 
 import redis.clients.jedis.Jedis;
 
+@FunctionalInterface
 public interface JedisCallback<T> {
-
-	T doInJedis(Jedis jedis, Object... args);
-
+	T jedis(Jedis jedis);
 }

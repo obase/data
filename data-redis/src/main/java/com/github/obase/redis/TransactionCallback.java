@@ -2,7 +2,8 @@ package com.github.obase.redis;
 
 import redis.clients.jedis.Transaction;
 
+@FunctionalInterface
 public interface TransactionCallback {
 
-	void doInTransaction(Transaction transaction, Object... args);
+	void transaction(Transaction transaction);
 }

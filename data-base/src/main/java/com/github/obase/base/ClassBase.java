@@ -191,11 +191,11 @@ public class ClassBase {
 	}
 
 	public static String getClassPathFromClassName(String className) {
-		return new StringBuilder(128).append('/').append(className.replace('.', '/')).append(".class").toString();
+		return new StringBuilder(128).append(className.replace('.', '/')).append(".class").toString();
 	}
 
 	public static String getClassPathFromInternalName(String internalName) {
-		return new StringBuilder(128).append('/').append(internalName).append(".class").toString();
+		return new StringBuilder(128).append(internalName).append(".class").toString();
 	}
 
 	public static String getClassNameFromInternalName(String internalName) {

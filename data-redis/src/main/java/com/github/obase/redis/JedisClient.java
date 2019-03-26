@@ -2,13 +2,13 @@ package com.github.obase.redis;
 
 import java.util.List;
 
-import redis.clients.jedis.BinaryJedisCommands;
-import redis.clients.jedis.JedisCommands;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.MultiKeyBinaryCommands;
-import redis.clients.jedis.MultiKeyCommands;
 import redis.clients.jedis.Response;
-import redis.clients.jedis.ScriptingCommands;
+import redis.clients.jedis.commands.BinaryJedisCommands;
+import redis.clients.jedis.commands.JedisCommands;
+import redis.clients.jedis.commands.MultiKeyBinaryCommands;
+import redis.clients.jedis.commands.MultiKeyCommands;
+import redis.clients.jedis.commands.ScriptingCommands;
 
 public interface JedisClient extends BinaryJedisCommands, MultiKeyBinaryCommands, JedisCommands, MultiKeyCommands, ScriptingCommands {
 

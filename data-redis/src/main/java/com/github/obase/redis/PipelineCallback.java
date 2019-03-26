@@ -2,7 +2,8 @@ package com.github.obase.redis;
 
 import redis.clients.jedis.Pipeline;
 
+@FunctionalInterface
 public interface PipelineCallback {
 
-	void doInPipeline(Pipeline pipeline, Object... args);
+	void pipeline(Pipeline pipeline);
 }
