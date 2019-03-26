@@ -20,7 +20,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.github.obase.SystemException;
 import com.github.obase.base.ClassBase;
 import com.github.obase.base.ConfBase;
 import com.github.obase.base.SaxBase;
@@ -66,9 +65,9 @@ public class Main {
 
 		Context appCtx = null;
 		App appBean = null;
-		ClassPathXmlApplicationContext springContext = new ClassPathXmlApplicationContext(new String[] { "classpath:" + SPRING_XML_LOCATION }, false);
-		try {
 
+		ClassPathXmlApplicationContext springContext = new ClassPathXmlApplicationContext(new String[] { "classpath*:" + SPRING_XML_LOCATION }, false);
+		try {
 			springContext.addBeanFactoryPostProcessor(new BaseBeanDefinitionRegistryPostProcessor(false));
 			for (Class<?> cls : scanBeanDefinitionRegistryPostProcessor()) {
 				springContext.addBeanFactoryPostProcessor((BeanDefinitionRegistryPostProcessor) cls.newInstance());
@@ -77,7 +76,6 @@ public class Main {
 
 			Map<String, App> beans = springContext.getBeansOfType(App.class);
 			if (beans.size() == 0) {
-				System.out.println("can't found any app bean in spring context");
 				System.exit(3);
 			}
 
@@ -118,10 +116,10 @@ public class Main {
 				System.out.println("can't found any app bean in spring context");
 				System.exit(3);
 			}
-		} catch (ReflectiveOperationException | IOException e1) {
-			throw new SystemException(e1);
+		} catch (Throwable t) {
+			logger.error(t);
 		} finally {
-			if (springContext != null && springContext.isActive()) {
+			if (springContext != null) {
 				springContext.close();
 			}
 		}
