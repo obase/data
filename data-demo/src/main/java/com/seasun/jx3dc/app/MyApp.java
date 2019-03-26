@@ -1,6 +1,7 @@
 package com.seasun.jx3dc.app;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.github.obase.Page;
 import com.github.obase.app.App;
 import com.github.obase.app.Context;
 import com.github.obase.app.Flags;
 import com.github.obase.mysql.MysqlClient;
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 import com.seasun.jx3dc.app.comp.Bean1;
@@ -39,10 +42,11 @@ public class MyApp extends App {
 
 	@Override
 	public int execute(Context ctx, Flags args) throws Exception {
-		List<Bean1> list = mysql.query("test.selectAccount", Bean1.class, null);
-		System.out.println(list);
-		logger.info(list);
-		
+		Page<Bean1> pg = new Page<Bean1>();
+		mysql.queryPage("test.selectAccount", Bean1.class, pg, null);
+		System.out.println(pg);
+		logger.info(pg);
+
 		mysql.selectByKey(Bean1.class, "a");
 
 		_OUTER_: for (int i = 0; i < 5; i++) {
@@ -62,6 +66,7 @@ public class MyApp extends App {
 		for (String name : names) {
 			System.out.println(name);
 		}
+		MongoCollection<Map> mc = db.getCollection("accounts", Map.class);
 
 		return 0;
 	}

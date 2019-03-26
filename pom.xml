@@ -378,4 +378,7 @@
 			</plugin>
 		</plugins>
 	</build>
+	<modules>
+		<module>data-redis</module>
+	</modules>
 </project>
