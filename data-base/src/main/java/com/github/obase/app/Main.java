@@ -121,7 +121,7 @@ public class Main {
 		} catch (ReflectiveOperationException | IOException e1) {
 			throw new SystemException(e1);
 		} finally {
-			if (springContext != null) {
+			if (springContext != null && springContext.isActive()) {
 				springContext.close();
 			}
 		}
