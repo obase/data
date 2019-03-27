@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Set;
 
 import redis.clients.jedis.BitOP;
-import redis.clients.jedis.BitPosParams;
 import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.GeoRadiusResponse;
 import redis.clients.jedis.GeoUnit;
@@ -22,7 +21,6 @@ import redis.clients.jedis.params.ZAddParams;
 import redis.clients.jedis.params.ZIncrByParams;
 
 public interface RedisClient {
-
 
 	/********************************************
 	 *  JedisCommands
@@ -42,8 +40,6 @@ public interface RedisClient {
 	byte[] dump(String key);
 
 	String restore(String key, int ttl, byte[] serializedValue);
-
-	String restoreReplace(String key, int ttl, byte[] serializedValue);
 
 	Long expire(String key, int seconds);
 
@@ -104,8 +100,6 @@ public interface RedisClient {
 	List<String> hmget(String key, String... fields);
 
 	Long hincrBy(String key, String field, long value);
-
-	Double hincrByFloat(String key, String field, double value);
 
 	Boolean hexists(String key, String field);
 
@@ -263,27 +257,15 @@ public interface RedisClient {
 
 	String echo(String string);
 
-	Long move(String key, int dbIndex);
-
 	Long bitcount(String key);
 
 	Long bitcount(String key, long start, long end);
 
-	Long bitpos(String key, boolean value);
-
-	Long bitpos(String key, boolean value, BitPosParams params);
-
 	ScanResult<Map.Entry<String, String>> hscan(String key, String cursor);
-
-	ScanResult<Map.Entry<String, String>> hscan(String key, String cursor, ScanParams params);
 
 	ScanResult<String> sscan(String key, String cursor);
 
 	ScanResult<Tuple> zscan(String key, String cursor);
-
-	ScanResult<Tuple> zscan(String key, String cursor, ScanParams params);
-
-	ScanResult<String> sscan(String key, String cursor, ScanParams params);
 
 	Long pfadd(String key, String... elements);
 
@@ -401,13 +383,17 @@ public interface RedisClient {
 
 	Object eval(String script, List<String> keys, List<String> args);
 
-	Object eval(String script);
+	Object eval(String script, String sampleKey);;
 
-	Object evalsha(String sha1);
+	Object evalsha(String sha1, String sampleKey);
 
 	Object evalsha(String sha1, List<String> keys, List<String> args);
 
 	Object evalsha(String sha1, int keyCount, String... params);
+
+	List<Boolean> scriptExists(String sampleKey, String... sha1);
+
+	String scriptLoad(String script, String sampleKey);
 
 	/*********************************************
 	 * provider implementation

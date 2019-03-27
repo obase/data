@@ -5,5 +5,5 @@ import redis.clients.jedis.Pipeline;
 @FunctionalInterface
 public interface PipelineCallback {
 
-	void pipeline(Pipeline pipeline);
+	boolean pipeline(Pipeline pipeline);
 }

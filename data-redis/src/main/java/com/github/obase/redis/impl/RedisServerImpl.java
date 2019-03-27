@@ -1,19 +1,16 @@
 package com.github.obase.redis.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import com.github.obase.redis.JedisCallback;
-import com.github.obase.redis.Keyfix;
 import com.github.obase.redis.PipelineCallback;
 import com.github.obase.redis.RedisClient;
 import com.github.obase.redis.TransactionCallback;
 
 import redis.clients.jedis.BitOP;
-import redis.clients.jedis.BitPosParams;
 import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.GeoRadiusResponse;
 import redis.clients.jedis.GeoUnit;
@@ -22,7 +19,6 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.ListPosition;
 import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Response;
 import redis.clients.jedis.ScanParams;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.SortingParams;
@@ -34,86 +30,13 @@ import redis.clients.jedis.params.SetParams;
 import redis.clients.jedis.params.ZAddParams;
 import redis.clients.jedis.params.ZIncrByParams;
 
-public class RedisServerImpl implements RedisClient, Keyfix {
+public class RedisServerImpl extends KeyfixImpl implements RedisClient {
 
 	final JedisPool jedisPool;
-	final String keyfix; // 所有key的统一后缀
 
 	public RedisServerImpl(JedisPool jedisPool, String keyfix) {
+		super(keyfix);
 		this.jedisPool = jedisPool;
-		this.keyfix = keyfix;
-	}
-
-	@Override
-	public String key(String orgKey) {
-		if (keyfix == null || keyfix.length() == 0) {
-			return orgKey;
-		}
-		return new StringBuilder(256).append(orgKey).append('.').append(keyfix).toString();
-	}
-
-	@Override
-	public String[] keys(String... orgKeys) {
-		if (keyfix == null || keyfix.length() == 0) {
-			return orgKeys;
-		}
-		String[] keys = new String[orgKeys.length];
-		StringBuilder sb = new StringBuilder(256);
-		for (int i = 0; i < keys.length; i++) {
-			keys[i] = sb.append(orgKeys[i]).append('.').append(keyfix).toString();
-			sb.setLength(0);
-		}
-		return keys;
-	}
-
-	@Override
-	public String[] keysvalues(String... orgs) {
-		if (keyfix == null || keyfix.length() == 0) {
-			return orgs;
-		}
-		String[] kvs = new String[orgs.length];
-		StringBuilder sb = new StringBuilder(256);
-		for (int i = 0; i < orgs.length; i++) {
-			if (i % 0 == 0) {
-				kvs[i] = sb.append(orgs[i]).append('.').append(keyfix).toString();
-				sb.setLength(0);
-			} else {
-				kvs[i] = orgs[i];
-			}
-		}
-		return kvs;
-	}
-
-	@Override
-	public String[] keys(int n, String... orgs) {
-		if (keyfix == null || keyfix.length() == 0) {
-			return orgs;
-		}
-		String[] kvs = new String[orgs.length];
-		StringBuilder sb = new StringBuilder(256);
-		for (int i = 0; i < n; i++) {
-			if (i % 0 == 0) {
-				kvs[i] = sb.append(orgs[i]).append('.').append(keyfix).toString();
-				sb.setLength(0);
-			} else {
-				kvs[i] = orgs[i];
-			}
-		}
-		return kvs;
-	}
-
-	@Override
-	public List<String> keys(List<String> orgs) {
-		if (keyfix == null || keyfix.length() == 0) {
-			return orgs;
-		}
-		List<String> keys = new ArrayList<String>(orgs.size());
-		StringBuilder sb = new StringBuilder(256);
-		for (String org : orgs) {
-			keys.add(sb.append(org).append('.').append(keyfix).toString());
-			sb.setLength(0);
-		}
-		return keys;
 	}
 
 	@Override
@@ -213,19 +136,6 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 		try {
 			jedis = jedisPool.getResource();
 			return jedis.restore(key(key), ttl, serializedValue);
-		} finally {
-			if (jedis != null) {
-				jedis.close();
-			}
-		}
-	}
-
-	@Override
-	public String restoreReplace(String key, int ttl, byte[] serializedValue) {
-		Jedis jedis = null;
-		try {
-			jedis = jedisPool.getResource();
-			return jedis.restoreReplace(key(key), ttl, serializedValue);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -616,19 +526,6 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 		try {
 			jedis = jedisPool.getResource();
 			return jedis.hincrBy(key(key), field, value);
-		} finally {
-			if (jedis != null) {
-				jedis.close();
-			}
-		}
-	}
-
-	@Override
-	public Double hincrByFloat(String key, String field, double value) {
-		Jedis jedis = null;
-		try {
-			jedis = jedisPool.getResource();
-			return jedis.hincrByFloat(key(key), field, value);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -1252,7 +1149,7 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
-			return jedis.zrevrangeByScore(key(key), min, max);
+			return jedis.zrevrangeByScore(key(key), max, min);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -1278,7 +1175,7 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
-			return jedis.zrevrangeByScore(key(key), min, max);
+			return jedis.zrevrangeByScore(key(key), max, min);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -1291,7 +1188,7 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
-			return jedis.zrangeByScore(key(key), min, max);
+			return jedis.zrangeByScore(key(key), min, max, offset, count);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -1304,7 +1201,7 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
-			return jedis.zrevrangeByScore(key(key), min, max, offset, count);
+			return jedis.zrevrangeByScore(key(key), max, min, offset, count);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -1330,7 +1227,7 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
-			return jedis.zrevrangeByScoreWithScores(key(key), min, max);
+			return jedis.zrevrangeByScoreWithScores(key(key), max, min);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -1356,7 +1253,7 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
-			return jedis.zrevrangeByScore(key(key), min, max, offset, count);
+			return jedis.zrevrangeByScore(key(key), max, min, offset, count);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -1382,7 +1279,7 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
-			return jedis.zrevrangeByScoreWithScores(key(key), min, max);
+			return jedis.zrevrangeByScoreWithScores(key(key), max, min);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -1408,7 +1305,7 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
-			return jedis.zrevrangeByScoreWithScores(key(key), min, max, offset, count);
+			return jedis.zrevrangeByScoreWithScores(key(key), max, min, offset, count);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -1421,7 +1318,7 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
-			return jedis.zrevrangeByScoreWithScores(key(key), min, max, offset, count);
+			return jedis.zrevrangeByScoreWithScores(key(key), max, min, offset, count);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -1512,7 +1409,7 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
-			return jedis.zrevrangeByLex(key(key), min, max);
+			return jedis.zrevrangeByLex(key(key), max, min);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -1525,7 +1422,7 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
-			return jedis.zrevrangeByLex(key(key), min, max, offset, count);
+			return jedis.zrevrangeByLex(key(key), max, min, offset, count);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -1651,19 +1548,6 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 	}
 
 	@Override
-	public Long move(String key, int dbIndex) {
-		Jedis jedis = null;
-		try {
-			jedis = jedisPool.getResource();
-			return jedis.move(key(key), dbIndex);
-		} finally {
-			if (jedis != null) {
-				jedis.close();
-			}
-		}
-	}
-
-	@Override
 	public Long bitcount(String key) {
 		Jedis jedis = null;
 		try {
@@ -1690,50 +1574,11 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 	}
 
 	@Override
-	public Long bitpos(String key, boolean value) {
-		Jedis jedis = null;
-		try {
-			jedis = jedisPool.getResource();
-			return jedis.bitpos(key(key), value);
-		} finally {
-			if (jedis != null) {
-				jedis.close();
-			}
-		}
-	}
-
-	@Override
-	public Long bitpos(String key, boolean value, BitPosParams params) {
-		Jedis jedis = null;
-		try {
-			jedis = jedisPool.getResource();
-			return jedis.bitpos(key(key), value, params);
-		} finally {
-			if (jedis != null) {
-				jedis.close();
-			}
-		}
-	}
-
-	@Override
 	public ScanResult<Entry<String, String>> hscan(String key, String cursor) {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
 			return jedis.hscan(key(key), cursor);
-		} finally {
-			if (jedis != null) {
-				jedis.close();
-			}
-		}
-	}
-
-	@Override
-	public ScanResult<Entry<String, String>> hscan(String key, String cursor, ScanParams params) {
-		Jedis jedis = null;
-		try {
-			jedis = jedisPool.getResource();
-			return jedis.hscan(key(key), cursor, params);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -1760,32 +1605,6 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 		try {
 			jedis = jedisPool.getResource();
 			return jedis.zscan(key(key), cursor);
-		} finally {
-			if (jedis != null) {
-				jedis.close();
-			}
-		}
-	}
-
-	@Override
-	public ScanResult<Tuple> zscan(String key, String cursor, ScanParams params) {
-		Jedis jedis = null;
-		try {
-			jedis = jedisPool.getResource();
-			return jedis.zscan(key(key), cursor, params);
-		} finally {
-			if (jedis != null) {
-				jedis.close();
-			}
-		}
-	}
-
-	@Override
-	public ScanResult<String> sscan(String key, String cursor, ScanParams params) {
-		Jedis jedis = null;
-		try {
-			jedis = jedisPool.getResource();
-			return jedis.sscan(key(key), cursor, params);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -2496,7 +2315,7 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 	}
 
 	@Override
-	public Object eval(String script) {
+	public Object eval(String script, String sampleKey) {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
@@ -2509,7 +2328,7 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 	}
 
 	@Override
-	public Object evalsha(String sha1) {
+	public Object evalsha(String sha1, String sampleKey) {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
@@ -2548,6 +2367,32 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 	}
 
 	@Override
+	public List<Boolean> scriptExists(String sampleKey, String... sha1) {
+		Jedis jedis = null;
+		try {
+			jedis = jedisPool.getResource();
+			return jedis.scriptExists(sha1);
+		} finally {
+			if (jedis != null) {
+				jedis.close();
+			}
+		}
+	}
+
+	@Override
+	public String scriptLoad(String script, String sampleKey) {
+		Jedis jedis = null;
+		try {
+			jedis = jedisPool.getResource();
+			return jedis.scriptLoad(script);
+		} finally {
+			if (jedis != null) {
+				jedis.close();
+			}
+		}
+	}
+
+	@Override
 	public Object provider() {
 		return jedisPool;
 	}
@@ -2555,38 +2400,65 @@ public class RedisServerImpl implements RedisClient, Keyfix {
 	@Override
 	public List<Object> pipeline(PipelineCallback action) {
 		Jedis jedis = null;
+		Pipeline pl = null;
 		try {
 			jedis = jedisPool.getResource();
-			Pipeline pl = jedis.pipelined();
-			action.pipeline(pl);
-			return pl.exec().get();
+			pl = jedis.pipelined();
+			if (action.pipeline(pl)) {
+				return pl.exec().get();
+			} else {
+				pl.clear();
+			}
+		} catch (Exception e) {
+			if (pl != null) {
+				pl.discard();
+			}
+			throw e;
 		} finally {
 			if (jedis != null) {
 				jedis.close();
 			}
 		}
+		return null;
 	}
 
 	@Override
 	public List<Object> transaction(TransactionCallback action) {
 		Jedis jedis = null;
+		Transaction tx = null;
 		try {
 			jedis = jedisPool.getResource();
-			Transaction tx = jedis.multi();
-			action.transaction(tx);
-			tx.dis
-			return tx.exec();
+			tx = jedis.multi();
+			if (action.transaction(tx)) {
+				return tx.exec();
+			} else {
+				tx.discard();
+			}
+
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.discard();
+			}
+			throw e;
 		} finally {
 			if (jedis != null) {
 				jedis.close();
 			}
 		}
+		return null;
 	}
 
 	@Override
 	public Object jedis(JedisCallback action) {
-		// TODO Auto-generated method stub
-		return null;
+		Jedis jedis = null;
+		try {
+			jedis = jedisPool.getResource();
+			return action.jedis(jedis);
+		} finally {
+			if (jedis != null) {
+				jedis.close();
+			}
+		}
 	}
 
 }
