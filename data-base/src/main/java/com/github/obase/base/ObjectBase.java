@@ -68,4 +68,18 @@ public class ObjectBase {
 	public static <K, V> boolean isNotEmpty(Map<K, V> m) {
 		return m != null && m.size() > 0;
 	}
+
+	public static <T> T first(Collection<T> c) {
+		if (c == null || c.size() == 0) {
+			return null;
+		}
+		return c.iterator().next();
+	}
+
+	public static <K, V> Map.Entry<K, V> first(Map<K, V> m) {
+		if (m == null || m.size() == 0) {
+			return null;
+		}
+		return m.entrySet().iterator().next();
+	}
 }

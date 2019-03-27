@@ -47,7 +47,7 @@ public class MysqlClientFactoryBean implements FactoryBean<MysqlClient>, Applica
 		}
 
 		ComboPooledDataSource ds = new ComboPooledDataSource();
-
+		ds.setAutoCommitOnClose(true);
 		ds.setJdbcUrl("jdbc:mysql://" + config.address + "/" + config.database + "?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull");
 		try {
 			ds.setDriverClass("com.mysql.jdbc.Driver");

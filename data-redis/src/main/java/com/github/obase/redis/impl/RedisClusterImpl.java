@@ -5,7 +5,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.github.obase.redis.JedisCallback;
+import com.github.obase.redis.Keyfix;
+import com.github.obase.redis.PipelineCallback;
 import com.github.obase.redis.RedisClient;
+import com.github.obase.redis.TransactionCallback;
 
 import redis.clients.jedis.BitOP;
 import redis.clients.jedis.BitPosParams;
@@ -25,12 +29,54 @@ import redis.clients.jedis.params.SetParams;
 import redis.clients.jedis.params.ZAddParams;
 import redis.clients.jedis.params.ZIncrByParams;
 
-public class RedisClusterImpl implements RedisClient {
+public class RedisClusterImpl implements RedisClient, Keyfix {
 
 	final JedisCluster jedisCluster;
+	final String keyfix; // 所有key的统一后缀
 
-	public RedisClusterImpl(JedisCluster jedisCluster) {
+	public RedisClusterImpl(JedisCluster jedisCluster, String keyfix) {
 		this.jedisCluster = jedisCluster;
+		this.keyfix = keyfix;
+	}
+
+	@Override
+	public String key(String orgKey) {
+		if (keyfix == null || keyfix.length() == 0) {
+			return orgKey;
+		}
+		return new StringBuilder(256).append(orgKey).append('.').append(keyfix).toString();
+	}
+
+	@Override
+	public String[] keys(String... orgKeys) {
+		if (keyfix == null || keyfix.length() == 0) {
+			return orgKeys;
+		}
+		String[] keys = new String[orgKeys.length];
+		StringBuilder sb = new StringBuilder(256);
+		for (int i = 0; i < keys.length; i++) {
+			keys[i] = sb.append(orgKeys[i]).append('.').append(keyfix).toString();
+			sb.setLength(0);
+		}
+		return keys;
+	}
+
+	@Override
+	public String[] keysvalues(String... orgs) {
+		if (keyfix == null || keyfix.length() == 0) {
+			return orgs;
+		}
+		String[] kvs = new String[orgs.length];
+		StringBuilder sb = new StringBuilder(256);
+		for (int i = 0; i < orgs.length; i++) {
+			if (i % 0 == 0) {
+				kvs[i] = sb.append(orgs[i]).append('.').append(keyfix).toString();
+				sb.setLength(0);
+			} else {
+				kvs[i] = orgs[i];
+			}
+		}
+		return kvs;
 	}
 
 	@Override
@@ -1151,6 +1197,30 @@ public class RedisClusterImpl implements RedisClient {
 
 	@Override
 	public Object evalsha(String sha1, int keyCount, String... params) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object provider() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Object> pipeline(PipelineCallback action) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Object> transaction(TransactionCallback action) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object jedis(JedisCallback action) {
 		// TODO Auto-generated method stub
 		return null;
 	}

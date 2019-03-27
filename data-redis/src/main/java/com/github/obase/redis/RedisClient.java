@@ -23,6 +23,7 @@ import redis.clients.jedis.params.ZIncrByParams;
 
 public interface RedisClient {
 
+
 	/********************************************
 	 *  JedisCommands
 	 ********************************************/
@@ -409,16 +410,22 @@ public interface RedisClient {
 	Object evalsha(String sha1, int keyCount, String... params);
 
 	/*********************************************
+	 * provider implementation
+	 *********************************************/
+	Object provider();
+
+	/*********************************************
 	 * pipeline(standalone模式)
 	 *********************************************/
-	
-	
+	List<Object> pipeline(PipelineCallback action);
+
 	/*********************************************
 	 * transalation(standalone模式)
 	 *********************************************/
+	List<Object> transaction(TransactionCallback action);
 
 	/*********************************************
 	 * jedis(standalone模式)
 	 *********************************************/
-
+	Object jedis(JedisCallback action);
 }
