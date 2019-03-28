@@ -61,6 +61,11 @@
 				<artifactId>data-mongo</artifactId>
 				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
+			<dependency>
+				<groupId>com.github.obase</groupId>
+				<artifactId>data-redis</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
 
 			<!-- =============================== -->
 			<!-- yaml utilities -->
