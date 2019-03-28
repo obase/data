@@ -143,4 +143,12 @@ public class RedisConfig {
 		this.proxyips = proxyips;
 	}
 
+	public int getDatabase() {
+		return database;
+	}
+
+	public void setDatabase(int database) {
+		this.database = database;
+	}
+
 }
