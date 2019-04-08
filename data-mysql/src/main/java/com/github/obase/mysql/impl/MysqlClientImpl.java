@@ -22,7 +22,6 @@ import com.github.obase.mysql.JdbcMeta;
 import com.github.obase.mysql.MysqlErrno;
 import com.github.obase.mysql.asm.AsmKit;
 import com.github.obase.mysql.data.ClassMetaInfo;
-import com.github.obase.mysql.sql.SqlDdlKit;
 import com.github.obase.mysql.sql.SqlMetaKit;
 import com.github.obase.mysql.xml.ObaseMysqlObject;
 import com.github.obase.mysql.xml.ObaseMysqlParser;
@@ -152,10 +151,7 @@ public class MysqlClientImpl extends MysqlClientOperation {
 								if (logger.isInfoEnabled()) {
 									logger.info(String.format("Load @Table: %s %s", classMetaInfo.tableName, classMetaInfo.columns));
 								}
-								if ((tableMetaInfo = tableMetaInfoMap.put(classMetaInfo.tableName, classMetaInfo)) != null) {
-									throw new SystemException(MysqlErrno.META_INFO_DUBLICATE_TABLE,
-											"Duplicate table: " + classMetaInfo.tableName + ", please check class:" + classMetaInfo.internalName + "," + tableMetaInfo.internalName);
-								}
+								tableMetaInfoMap.put(classMetaInfo.internalName, classMetaInfo);
 							}
 						}
 					}
@@ -181,10 +177,7 @@ public class MysqlClientImpl extends MysqlClientOperation {
 										if (logger.isInfoEnabled()) {
 											logger.info(String.format("Load @Table: %s %s", classMetaInfo.tableName, classMetaInfo.columns));
 										}
-										if ((tableMetaInfo = tableMetaInfoMap.put(classMetaInfo.tableName, classMetaInfo)) != null) {
-											throw new SystemException(MysqlErrno.META_INFO_DUBLICATE_TABLE,
-													"Duplicate table: " + classMetaInfo.tableName + ", please check class:" + classMetaInfo.internalName + "," + tableMetaInfo.internalName);
-										}
+										tableMetaInfoMap.put(classMetaInfo.internalName, classMetaInfo);
 									}
 								}
 							}
@@ -235,11 +228,11 @@ public class MysqlClientImpl extends MysqlClientOperation {
 			}
 		}
 
-		if (updateTable) {
-			if (tableMetaInfoMap.size() > 0) {
-				SqlDdlKit.processUpdateTable(conn, tableMetaInfoMap);
-			}
-		}
+		//		if (updateTable) {
+		//			if (tableMetaInfoMap.size() > 0) {
+		//				SqlDdlKit.processUpdateTable(conn, tableMetaInfoMap);
+		//			}
+		//		}
 
 		if (logger.isInfoEnabled()) {
 			logger.info(String.format("Mysqlclient initialization successful, load %d tables, %d metas, and %d statements", tableMetaInfoMap.size(), metaMetaInfoMap.size(), statementCache.size()));
