@@ -9,6 +9,7 @@ import java.sql.SQLException;
  * @author hezhaowu
  * @since 0.9.1
  */
+@FunctionalInterface
 public interface ConnectionCallback<T> {
 
 	T doInConnection(Connection conn) throws SQLException;
