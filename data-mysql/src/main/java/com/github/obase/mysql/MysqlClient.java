@@ -39,6 +39,8 @@ public interface MysqlClient {
 
 	<T> List<T> query(PstmtMeta pstmt, Class<T> type, Object param) throws SQLException;
 
+	<T> T query(PstmtMeta pstmt, ResultSetCallback<T> rsc, Object param) throws SQLException;
+
 	<T> List<T> queryRange(PstmtMeta pstmt, Class<T> type, int offset, int count, Object param) throws SQLException;
 
 	<T> void queryPage(PstmtMeta pstmt, Class<T> type, Page<T> page, Object param) throws SQLException;
@@ -122,6 +124,8 @@ public interface MysqlClient {
 
 	<T> List<T> query(String queryId, Class<T> elemType, Object params) throws SQLException;
 
+	<T> T query(String queryId, ResultSetCallback<T> rsc, Object params) throws SQLException;
+
 	<T> List<T> queryRange(String queryId, Class<T> elemType, int offset, int count, Object params) throws SQLException;
 
 	<T> T queryFirst(String queryId, Class<T> elemType, Object params) throws SQLException;
@@ -142,4 +146,10 @@ public interface MysqlClient {
 	// Transaction处理方法
 	// =====================================================
 	<T> T transaction(TransactionCallback<T> action) throws TransactionException;
+
+	// =====================================================
+	// Connection处理方法
+	// =====================================================
+	<T> T connection(ConnectionCallback<T> conn) throws SQLException;
+
 }

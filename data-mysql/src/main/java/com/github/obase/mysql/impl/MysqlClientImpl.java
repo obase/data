@@ -20,6 +20,7 @@ import com.github.obase.SystemException;
 import com.github.obase.base.ClassBase;
 import com.github.obase.mysql.JdbcMeta;
 import com.github.obase.mysql.MysqlErrno;
+import com.github.obase.mysql.ResultSetCallback;
 import com.github.obase.mysql.asm.AsmKit;
 import com.github.obase.mysql.data.ClassMetaInfo;
 import com.github.obase.mysql.sql.SqlMetaKit;
@@ -131,7 +132,7 @@ public class MysqlClientImpl extends MysqlClientOperation {
 		Map<String, ClassMetaInfo> metaMetaInfoMap = new HashMap<String, ClassMetaInfo>(); // key is classname
 		Map<String, ClassMetaInfo> tableMetaInfoMap = new HashMap<String, ClassMetaInfo>(); // key is tablename
 
-		ClassMetaInfo classMetaInfo, tableMetaInfo;
+		ClassMetaInfo classMetaInfo/*, tableMetaInfo*/;
 		StringBuilder sb = new StringBuilder(128);
 		String key;
 
@@ -525,6 +526,15 @@ public class MysqlClientImpl extends MysqlClientOperation {
 			throw new SystemException(MysqlErrno.META_INFO_NOT_FOUND, "Not found statement: " + queryId);
 		}
 		return query(xstmt.staticPstmtMeta != null ? xstmt.staticPstmtMeta : xstmt.dynamicPstmtMeta(JdbcMeta.getByObj(params), params), elemType, params);
+	}
+
+	@Override
+	public <T> T query(String queryId, ResultSetCallback<T> rsc, Object params) throws SQLException {
+		Statement xstmt = statementCache.get(queryId);
+		if (xstmt == null) {
+			throw new SystemException(MysqlErrno.META_INFO_NOT_FOUND, "Not found statement: " + queryId);
+		}
+		return query(xstmt.staticPstmtMeta != null ? xstmt.staticPstmtMeta : xstmt.dynamicPstmtMeta(JdbcMeta.getByObj(params), params), rsc, params);
 	}
 
 	@Override

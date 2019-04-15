@@ -18,9 +18,11 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.github.obase.Page;
+import com.github.obase.mysql.ConnectionCallback;
 import com.github.obase.mysql.JdbcMeta;
 import com.github.obase.mysql.MysqlClient;
 import com.github.obase.mysql.PstmtMeta;
+import com.github.obase.mysql.ResultSetCallback;
 import com.github.obase.mysql.sql.SqlDqlKit;
 import com.github.obase.spring.transaction.DataSourceTransactionManager;
 import com.github.obase.spring.transaction.DataSourceUtils;
@@ -199,6 +201,37 @@ public abstract class MysqlClientOperation implements MysqlClient {
 				list.add((T) getjm.getResult(rs, pstmt.label));
 			}
 			return list;
+		} catch (SQLException ex) {
+			// Release Connection early, to avoid potential connection pool deadlock
+			// in the case when the exception translator hasn't been initialized yet.
+			releaseStatement(ps);
+			DataSourceUtils.releaseConnection(conn, dataSource);
+			conn = null;
+			throw ex;
+		} finally {
+			releaseStatement(ps);
+			DataSourceUtils.releaseConnection(conn, dataSource);
+		}
+	}
+
+	@Override
+	public <T> T query(PstmtMeta pstmt, ResultSetCallback<T> rsc, Object param) throws SQLException {
+
+		if (showSql) {
+			logger.info("[SQL] " + pstmt);
+		}
+
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		Connection conn = DataSourceUtils.getConnection(dataSource);
+		try {
+			ps = conn.prepareStatement(pstmt.psql);
+			if (param != null) {
+				JdbcMeta setjm = JdbcMeta.getByObj(param);
+				pstmt.setParam(ps, setjm, param);
+			}
+			rs = ps.executeQuery();
+			return rsc.doInResultSet(rs);
 		} catch (SQLException ex) {
 			// Release Connection early, to avoid potential connection pool deadlock
 			// in the case when the exception translator hasn't been initialized yet.
@@ -519,4 +552,24 @@ public abstract class MysqlClientOperation implements MysqlClient {
 	public <T> T transaction(TransactionCallback<T> action) throws TransactionException {
 		return transactionTemplate.execute(action);
 	}
+
+	public <T> T connection(ConnectionCallback<T> action) throws SQLException {
+		Connection conn = DataSourceUtils.getConnection(dataSource);
+		try {
+			if (conn.getAutoCommit()) {
+				logger.warn("Not setAutoCommit(false) before executingBatch");
+				conn.setAutoCommit(false);
+			}
+			return action.doInConnection(conn);
+		} catch (SQLException ex) {
+			// Release Connection early, to avoid potential connection pool deadlock
+			// in the case when the exception translator hasn't been initialized yet.
+			DataSourceUtils.releaseConnection(conn, dataSource);
+			conn = null;
+			throw ex;
+		} finally {
+			DataSourceUtils.releaseConnection(conn, dataSource);
+		}
+	}
+
 }
