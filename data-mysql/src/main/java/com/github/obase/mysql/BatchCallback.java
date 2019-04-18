@@ -5,5 +5,5 @@ import java.util.List;
 
 @FunctionalInterface
 public interface BatchCallback<T> {
-	T batch(List<T> result) throws SQLException;
+	void batch(List<T> result) throws SQLException;
 }
