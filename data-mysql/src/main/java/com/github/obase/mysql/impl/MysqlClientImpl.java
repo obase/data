@@ -18,9 +18,9 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import com.github.obase.Page;
 import com.github.obase.SystemException;
 import com.github.obase.base.ClassBase;
+import com.github.obase.mysql.BatchCallback;
 import com.github.obase.mysql.JdbcMeta;
 import com.github.obase.mysql.MysqlErrno;
-import com.github.obase.mysql.ResultSetCallback;
 import com.github.obase.mysql.asm.AsmKit;
 import com.github.obase.mysql.data.ClassMetaInfo;
 import com.github.obase.mysql.sql.SqlMetaKit;
@@ -529,12 +529,12 @@ public class MysqlClientImpl extends MysqlClientOperation {
 	}
 
 	@Override
-	public <T> T query(String queryId, ResultSetCallback<T> rsc, Object params) throws SQLException {
+	public <T> void query(String queryId, Class<T> elemType, Object params, int batch, BatchCallback<T> bc) throws SQLException {
 		Statement xstmt = statementCache.get(queryId);
 		if (xstmt == null) {
 			throw new SystemException(MysqlErrno.META_INFO_NOT_FOUND, "Not found statement: " + queryId);
 		}
-		return query(xstmt.staticPstmtMeta != null ? xstmt.staticPstmtMeta : xstmt.dynamicPstmtMeta(JdbcMeta.getByObj(params), params), rsc, params);
+		query(xstmt.staticPstmtMeta != null ? xstmt.staticPstmtMeta : xstmt.dynamicPstmtMeta(JdbcMeta.getByObj(params), params), elemType, params, batch, bc);
 	}
 
 	@Override

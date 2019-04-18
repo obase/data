@@ -18,11 +18,11 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.github.obase.Page;
+import com.github.obase.mysql.BatchCallback;
 import com.github.obase.mysql.ConnectionCallback;
 import com.github.obase.mysql.JdbcMeta;
 import com.github.obase.mysql.MysqlClient;
 import com.github.obase.mysql.PstmtMeta;
-import com.github.obase.mysql.ResultSetCallback;
 import com.github.obase.mysql.sql.SqlDqlKit;
 import com.github.obase.spring.transaction.DataSourceTransactionManager;
 import com.github.obase.spring.transaction.DataSourceUtils;
@@ -215,7 +215,7 @@ public abstract class MysqlClientOperation implements MysqlClient {
 	}
 
 	@Override
-	public <T> T query(PstmtMeta pstmt, ResultSetCallback<T> rsc, Object param) throws SQLException {
+	public <T> void query(PstmtMeta pstmt, Class<T> type, Object param, int batch, BatchCallback<T> bc) throws SQLException {
 
 		if (showSql) {
 			logger.info("[SQL] " + pstmt);
@@ -231,7 +231,26 @@ public abstract class MysqlClientOperation implements MysqlClient {
 				pstmt.setParam(ps, setjm, param);
 			}
 			rs = ps.executeQuery();
-			return rsc.doInResultSet(rs);
+
+			// 设置查询结果标签
+			if (pstmt.label == null) {
+				SqlDqlKit.parsePstmtLabel(rs, pstmt);
+			}
+
+			JdbcMeta getjm = JdbcMeta.getByType(type);
+			List<T> list = new LinkedList<T>();
+			while (true) {
+				for (int i = 0; i < batch && rs.next(); i++) {
+					list.add((T) getjm.getResult(rs, pstmt.label));
+				}
+				if (list.isEmpty()) {
+					break;
+				}else {
+					bc.batch(list);
+					list.clear();
+				}
+			}
+
 		} catch (SQLException ex) {
 			// Release Connection early, to avoid potential connection pool deadlock
 			// in the case when the exception translator hasn't been initialized yet.
