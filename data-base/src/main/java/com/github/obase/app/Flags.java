@@ -33,6 +33,11 @@ public class Flags {
 		return values.get(opt);
 	}
 
+	public String getArg(String opt, String def) {
+		String val = values.get(opt);
+		return val == null ? def : val;
+	}
+
 	public String[] args() {
 		return args;
 	}
